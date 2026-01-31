@@ -1,0 +1,308 @@
+---
+import SectionHeader from '../SectionHeader.astro';
+
+const steps = [
+  {
+    number: '01',
+    title: 'Analyse stratégique',
+    description: 'Nous étudions votre modèle économique, vos produits/services, votre cible et vos objectifs pour concevoir le plan MLM idéal.',
+    items: ['Audit de l\'existant', 'Étude de marché', 'Définition des objectifs'],
+    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="m21 21-4.3-4.3"></path>
+      <path d="M11 8v6"></path>
+      <path d="M8 11h6"></path>
+    </svg>`
+  },
+  {
+    number: '02',
+    title: 'Conception du plan',
+    description: 'Création de la structure de rémunération, simulation des revenus et validation de la conformité réglementaire.',
+    items: ['Architecture du plan', 'Calcul des commissions', 'Validation juridique'],
+    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+      <path d="M2 17l10 5 10-5"></path>
+      <path d="M2 12l10 5 10-5"></path>
+    </svg>`
+  },
+  {
+    number: '03',
+    title: 'Développement & Lancement',
+    description: 'Intégration technique, tests approfondis, formation de vos équipes et lancement officiel avec support continu.',
+    items: ['Développement sur-mesure', 'Intégration & tests', 'Lancement accompagné'],
+    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>`
+  }
+];
+---
+
+<section class="section process" id="process">
+  <!-- Background decoration -->
+  <div class="process-bg">
+    <div class="bg-gradient"></div>
+  </div>
+
+  <div class="container">
+    <SectionHeader 
+      tag="Méthodologie"
+      title="Notre processus en 3 étapes"
+      subtitle="Une approche structurée et transparente pour garantir le succès de votre projet MLM."
+    />
+    
+    <div class="process-timeline">
+      <!-- Connection line -->
+      <div class="timeline-line">
+        <div class="line-progress"></div>
+      </div>
+
+      {steps.map((step, index) => (
+        <div class="process-step animate-on-scroll" style={`--delay: ${index * 0.15}s`}>
+          <div class="step-header">
+            <div class="step-number-wrapper">
+              <span class="step-number">{step.number}</span>
+              <div class="step-icon" set:html={step.icon} />
+            </div>
+          </div>
+          
+          <div class="step-content">
+            <h3>{step.title}</h3>
+            <p>{step.description}</p>
+            
+            <ul class="step-list">
+              {step.items.map(item => (
+                <li>
+                  <span class="check-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .process {
+    background: #fafafa;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Background */
+  .process-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .bg-gradient {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(128, 59, 133, 0.04) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  /* Timeline */
+  .process-timeline {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .timeline-line {
+    position: absolute;
+    top: 48px;
+    left: 16.66%;
+    right: 16.66%;
+    height: 3px;
+    background: #e8e8ed;
+    border-radius: 2px;
+    z-index: 0;
+  }
+
+  .line-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #803B85, #E84A8A);
+    border-radius: 2px;
+    animation: progressLine 2s ease 1s forwards;
+  }
+
+  @keyframes progressLine {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  /* Step */
+  .process-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    animation-delay: var(--delay);
+  }
+
+  .step-header {
+    margin-bottom: 32px;
+  }
+
+  .step-number-wrapper {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .step-number {
+    position: absolute;
+    font-size: 72px;
+    font-weight: 800;
+    color: rgba(128, 59, 133, 0.06);
+    letter-spacing: -0.03em;
+    transition: all 0.4s ease;
+  }
+
+  .process-step:hover .step-number {
+    color: rgba(128, 59, 133, 0.1);
+    transform: scale(1.1);
+  }
+
+  .step-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #803B85 0%, #9B4BA0 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 
+      0 8px 24px rgba(128, 59, 133, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    z-index: 1;
+  }
+
+  .process-step:hover .step-icon {
+    transform: scale(1.15) rotate(5deg);
+    box-shadow: 
+      0 12px 32px rgba(128, 59, 133, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Content */
+  .step-content {
+    background: white;
+    border-radius: 24px;
+    padding: 36px 32px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    width: 100%;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .process-step:hover .step-content {
+    transform: translateY(-8px);
+    box-shadow: 
+      0 16px 48px rgba(0, 0, 0, 0.08),
+      0 0 0 1px rgba(128, 59, 133, 0.08);
+  }
+
+  .step-content h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+
+  .step-content p {
+    font-size: 15px;
+    color: #6e6e73;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  /* Step list */
+  .step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .step-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: #1d1d1f;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 10px 14px;
+    background: #f8f8fa;
+    border-radius: 10px;
+  }
+
+  .step-list li:hover {
+    background: rgba(128, 59, 133, 0.06);
+    transform: translateX(4px);
+  }
+
+  .check-icon {
+    width: 22px;
+    height: 22px;
+    background: linear-gradient(135deg, #803B85 0%, #E84A8A 100%);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .process-timeline {
+      grid-template-columns: 1fr;
+      max-width: 500px;
+      gap: 48px;
+    }
+
+    .timeline-line {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .step-content {
+      padding: 28px 24px;
+    }
+  }
+</style>

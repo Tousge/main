@@ -1,0 +1,339 @@
+---
+import SectionHeader from '../SectionHeader.astro';
+
+const benefits = [
+  {
+    icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+      <circle cx="9" cy="7" r="4"></circle>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    </svg>`,
+    title: 'Acquisition accélérée',
+    description: 'Multipliez vos canaux d\'acquisition grâce au bouche-à-oreille structuré et récompensé.',
+    stat: '3x',
+    statLabel: 'plus de leads'
+  },
+  {
+    icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+      <polyline points="16 6 12 2 8 6"></polyline>
+      <line x1="12" y1="2" x2="12" y2="15"></line>
+    </svg>`,
+    title: 'Recommandation organique',
+    description: 'Transformez chaque client satisfait en promoteur actif de votre marque.',
+    stat: '40%',
+    statLabel: 'taux de conversion'
+  },
+  {
+    icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+    </svg>`,
+    title: 'Fidélisation renforcée',
+    description: 'Créez un engagement durable en récompensant la loyauté de vos clients.',
+    stat: '85%',
+    statLabel: 'rétention'
+  },
+  {
+    icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="2" y1="12" x2="22" y2="12"></line>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+    </svg>`,
+    title: 'Communauté engagée',
+    description: 'Construisez un réseau de partenaires motivés autour de votre marque.',
+    stat: '500+',
+    statLabel: 'ambassadeurs'
+  },
+  {
+    icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="12" y1="1" x2="12" y2="23"></line>
+      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+    </svg>`,
+    title: 'Réduction des coûts',
+    description: 'Réduisez votre budget publicitaire en misant sur la recommandation organique.',
+    stat: '-60%',
+    statLabel: 'coût acquisition'
+  },
+  {
+    icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+      <polyline points="17 6 23 6 23 12"></polyline>
+    </svg>`,
+    title: 'Croissance exponentielle',
+    description: 'Bénéficiez de l\'effet viral d\'un réseau qui se développe de façon organique.',
+    stat: '247%',
+    statLabel: 'croissance'
+  }
+];
+---
+
+<section class="section why-mlm" id="why-mlm">
+  <!-- Background Elements -->
+  <div class="section-bg">
+    <div class="bg-gradient"></div>
+    <div class="network-lines">
+      <svg viewBox="0 0 800 600" fill="none" class="network-svg">
+        <!-- Network visualization -->
+        <circle cx="400" cy="300" r="8" fill="#803B85" class="node-center"/>
+        <circle cx="400" cy="300" r="40" stroke="#803B85" stroke-opacity="0.1" stroke-width="1" class="pulse-ring"/>
+        <circle cx="400" cy="300" r="80" stroke="#803B85" stroke-opacity="0.05" stroke-width="1" class="pulse-ring delay-1"/>
+        
+        <!-- Lines -->
+        <line x1="400" y1="300" x2="250" y2="180" stroke="url(#lineGradient)" stroke-width="1" stroke-dasharray="4,4" class="connection"/>
+        <line x1="400" y1="300" x2="550" y2="180" stroke="url(#lineGradient)" stroke-width="1" stroke-dasharray="4,4" class="connection"/>
+        <line x1="400" y1="300" x2="200" y2="420" stroke="url(#lineGradient)" stroke-width="1" stroke-dasharray="4,4" class="connection"/>
+        <line x1="400" y1="300" x2="600" y2="420" stroke="url(#lineGradient)" stroke-width="1" stroke-dasharray="4,4" class="connection"/>
+        
+        <!-- Secondary nodes -->
+        <circle cx="250" cy="180" r="5" fill="#E84A8A" class="node-secondary"/>
+        <circle cx="550" cy="180" r="5" fill="#E84A8A" class="node-secondary"/>
+        <circle cx="200" cy="420" r="5" fill="#E84A8A" class="node-secondary"/>
+        <circle cx="600" cy="420" r="5" fill="#E84A8A" class="node-secondary"/>
+        
+        <defs>
+          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#803B85;stop-opacity:0.3"/>
+            <stop offset="100%" style="stop-color:#E84A8A;stop-opacity:0.3"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <div class="container">
+    <SectionHeader 
+      tag="Avantages"
+      title="Pourquoi intégrer un MLM dans votre entreprise ?"
+      subtitle="Le marketing multi-niveaux transforme vos clients en ambassadeurs actifs, créant une croissance organique et durable."
+    />
+    
+    <div class="benefits-grid">
+      {benefits.map((benefit, index) => (
+        <div class="benefit-card animate-on-scroll" style={`--delay: ${index * 0.1}s`}>
+          <div class="benefit-icon" set:html={benefit.icon} />
+          
+          <div class="benefit-content">
+            <h3>{benefit.title}</h3>
+            <p>{benefit.description}</p>
+          </div>
+
+          <div class="benefit-stat">
+            <span class="stat-value">{benefit.stat}</span>
+            <span class="stat-label">{benefit.statLabel}</span>
+          </div>
+
+          <!-- Hover glow -->
+          <div class="card-glow"></div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .why-mlm {
+    background: linear-gradient(180deg, #f5f5f7 0%, #fafafa 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Background */
+  .section-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .bg-gradient {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(128, 59, 133, 0.03) 0%, transparent 60%);
+  }
+
+  .network-lines {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+  }
+
+  .network-svg {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+  }
+
+  .pulse-ring {
+    animation: pulseRing 4s ease-in-out infinite;
+  }
+
+  .pulse-ring.delay-1 {
+    animation-delay: 1s;
+  }
+
+  @keyframes pulseRing {
+    0%, 100% { transform: scale(1); opacity: 0.1; }
+    50% { transform: scale(1.2); opacity: 0.05; }
+  }
+
+  .node-center {
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .node-secondary {
+    animation: pulse 2s ease-in-out infinite 0.5s;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+
+  .connection {
+    animation: dash 3s linear infinite;
+  }
+
+  @keyframes dash {
+    to { stroke-dashoffset: -16; }
+  }
+
+  /* Grid */
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Card */
+  .benefit-card {
+    background: white;
+    border-radius: 24px;
+    padding: 36px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation-delay: var(--delay);
+  }
+
+  .benefit-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 
+      0 16px 48px rgba(0, 0, 0, 0.08),
+      0 0 0 1px rgba(128, 59, 133, 0.1);
+  }
+
+  .card-glow {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(128, 59, 133, 0.04) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+
+  .benefit-card:hover .card-glow {
+    opacity: 1;
+  }
+
+  /* Icon */
+  .benefit-icon {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, rgba(128, 59, 133, 0.08) 0%, rgba(232, 74, 138, 0.08) 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    color: #803B85;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    z-index: 1;
+  }
+
+  .benefit-card:hover .benefit-icon {
+    background: linear-gradient(135deg, #803B85 0%, #E84A8A 100%);
+    color: white;
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 12px 32px rgba(128, 59, 133, 0.35);
+  }
+
+  /* Content */
+  .benefit-content {
+    flex: 1;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .benefit-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .benefit-card p {
+    font-size: 15px;
+    color: #6e6e73;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Stat */
+  .benefit-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(128, 59, 133, 0.06) 0%, rgba(232, 74, 138, 0.06) 100%);
+    border-radius: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: 800;
+    color: #803B85;
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: #6e6e73;
+    font-weight: 500;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .benefits-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .benefits-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .network-lines {
+      display: none;
+    }
+
+    .benefit-card {
+      padding: 28px;
+    }
+  }
+</style>

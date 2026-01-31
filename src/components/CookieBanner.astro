@@ -1,0 +1,172 @@
+---
+// Bannière de consentement RGPD - Légère et conforme
+---
+
+<div id="cookie-banner" class="cookie-banner" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
+  <div class="cookie-content">
+    <div class="cookie-text">
+      <h3 id="cookie-title" class="cookie-title">🍪 Nous respectons votre vie privée</h3>
+      <p id="cookie-desc" class="cookie-desc">
+        Nous utilisons des cookies pour améliorer votre expérience sur notre site. 
+        Vous pouvez accepter ou refuser ces cookies.
+        <a href="/politique-confidentialite" class="cookie-link">En savoir plus</a>
+      </p>
+    </div>
+    <div class="cookie-actions">
+      <button id="cookie-reject" class="cookie-btn cookie-btn-secondary" type="button">
+        Refuser
+      </button>
+      <button id="cookie-accept" class="cookie-btn cookie-btn-primary" type="button">
+        Accepter
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cookie-banner {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    max-width: 380px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid #e8e8ed;
+    border-radius: 18px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
+                opacity 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .cookie-banner.visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .cookie-banner.hidden {
+    display: none;
+  }
+
+  .cookie-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .cookie-text {
+    flex: 1;
+  }
+
+  .cookie-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0 0 8px 0;
+  }
+
+  .cookie-desc {
+    font-size: 13px;
+    color: #6e6e73;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .cookie-link {
+    color: #803B85;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s;
+  }
+
+  .cookie-link:hover {
+    color: #9B4BA0;
+  }
+
+  .cookie-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .cookie-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 980px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    border: none;
+    font-family: inherit;
+  }
+
+  .cookie-btn-primary {
+    background: #803B85;
+    color: white;
+  }
+
+  .cookie-btn-primary:hover {
+    background: #9B4BA0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(128, 59, 133, 0.3);
+  }
+
+  .cookie-btn-secondary {
+    background: #f5f5f7;
+    color: #1d1d1f;
+    border: 1px solid #e8e8ed;
+  }
+
+  .cookie-btn-secondary:hover {
+    background: #e8e8ed;
+  }
+
+  @media (max-width: 480px) {
+    .cookie-banner {
+      bottom: 16px;
+      right: 16px;
+      left: 16px;
+      max-width: none;
+    }
+  }
+</style>
+
+<script>
+  // RGPD Cookie Consent - Minimal JS
+  const banner = document.getElementById('cookie-banner');
+  const acceptBtn = document.getElementById('cookie-accept');
+  const rejectBtn = document.getElementById('cookie-reject');
+  
+  const CONSENT_KEY = 'tousgether_cookie_consent';
+  
+  // Vérifier si le consentement a déjà été donné
+  const hasConsent = localStorage.getItem(CONSENT_KEY);
+  
+  if (!hasConsent) {
+    // Afficher la bannière après un court délai
+    setTimeout(() => {
+      banner?.classList.add('visible');
+    }, 1000);
+  } else {
+    banner?.classList.add('hidden');
+  }
+  
+  // Gérer l'acceptation
+  acceptBtn?.addEventListener('click', () => {
+    localStorage.setItem(CONSENT_KEY, 'accepted');
+    banner?.classList.remove('visible');
+    setTimeout(() => banner?.classList.add('hidden'), 400);
+  });
+  
+  // Gérer le refus
+  rejectBtn?.addEventListener('click', () => {
+    localStorage.setItem(CONSENT_KEY, 'rejected');
+    banner?.classList.remove('visible');
+    setTimeout(() => banner?.classList.add('hidden'), 400);
+  });
+</script>
+

@@ -1,0 +1,241 @@
+---
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'white' | 'outline-white';
+  class?: string;
+  target?: string;
+  rel?: string;
+  size?: 'default' | 'large';
+}
+
+const { 
+  href, 
+  variant = 'primary', 
+  class: className = '',
+  target,
+  rel,
+  size = 'default'
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag 
+  href={href}
+  target={target}
+  rel={rel}
+  class:list={['btn', `btn-${variant}`, `btn-${size}`, className]}
+>
+  <span class="btn-content">
+    <slot />
+  </span>
+  <span class="btn-shine"></span>
+</Tag>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 32px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+
+  .btn-large {
+    padding: 18px 36px;
+    font-size: 17px;
+  }
+
+  .btn-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn :global(svg) {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-shrink: 0;
+  }
+
+  .btn-shine {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg, 
+      transparent 20%, 
+      rgba(255, 255, 255, 0.2) 45%, 
+      rgba(255, 255, 255, 0.3) 50%, 
+      rgba(255, 255, 255, 0.2) 55%, 
+      transparent 80%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.8s ease;
+  }
+
+  .btn:hover .btn-shine {
+    transform: translateX(100%);
+  }
+
+  /* Primary Button */
+  .btn-primary {
+    background: linear-gradient(135deg, #803B85 0%, #9B4BA0 100%);
+    color: white;
+    box-shadow: 
+      0 4px 16px rgba(128, 59, 133, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #9B4BA0 0%, #B855BD 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    border-radius: inherit;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+      0 8px 32px rgba(128, 59, 133, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-primary:hover::before {
+    opacity: 1;
+  }
+
+  .btn-primary:hover :global(svg) {
+    transform: translateX(4px);
+  }
+
+  .btn-primary:active {
+    transform: translateY(-1px);
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    background: transparent;
+    color: #803B85;
+    padding: 16px 8px;
+  }
+
+  .btn-secondary::after {
+    content: '';
+    position: absolute;
+    bottom: 12px;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: linear-gradient(90deg, #803B85, #E84A8A);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-secondary:hover {
+    color: #E84A8A;
+  }
+
+  .btn-secondary:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .btn-secondary:hover :global(svg) {
+    transform: translateX(6px);
+  }
+
+  /* White Button */
+  .btn-white {
+    background: white;
+    color: #803B85;
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .btn-white::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #f8f8fa 0%, #f0f0f5 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    border-radius: inherit;
+  }
+
+  .btn-white:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .btn-white:hover::before {
+    opacity: 1;
+  }
+
+  .btn-white:hover :global(svg) {
+    transform: translateX(4px);
+  }
+
+  /* Outline White Button */
+  .btn-outline-white {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .btn-outline-white::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    border-radius: inherit;
+  }
+
+  .btn-outline-white:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-outline-white:hover::before {
+    opacity: 1;
+  }
+
+  .btn-outline-white:hover :global(svg) {
+    transform: translateX(4px);
+  }
+
+  /* Focus states */
+  .btn:focus-visible {
+    outline: 2px solid #803B85;
+    outline-offset: 3px;
+  }
+
+  .btn-white:focus-visible,
+  .btn-outline-white:focus-visible {
+    outline-color: white;
+  }
+</style>

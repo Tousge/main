@@ -1,0 +1,113 @@
+---
+import SectionHeader from '../SectionHeader.astro';
+
+const useCases = [
+  { icon: '🛒', title: 'Marketplaces', description: 'Récompensez les vendeurs qui attirent de nouveaux marchands sur votre plateforme.' },
+  { icon: '💻', title: 'SaaS', description: 'Créez un programme d\'affiliation multi-niveaux pour vos utilisateurs.' },
+  { icon: '🏪', title: 'Commerces physiques', description: 'Transformez vos clients fidèles en ambassadeurs de votre enseigne.' },
+  { icon: '🌐', title: 'Réseaux existants', description: 'Digitalisez et optimisez votre réseau MLM actuel.' },
+  { icon: '📱', title: 'Apps mobiles', description: 'Intégrez un système de parrainage viral dans votre application.' },
+  { icon: '🔧', title: 'Plateformes de services', description: 'Récompensez la recommandation de prestataires et de clients.' }
+];
+---
+
+<section class="section use-cases" id="use-cases">
+  <div class="container">
+    <SectionHeader 
+      tag="Applications"
+      title="Cas d'usage"
+      subtitle="Notre solution s'adapte à tous les types d'entreprises et de modèles économiques."
+    />
+    <div class="use-cases-grid">
+      {useCases.map(useCase => (
+        <div class="use-case-card">
+          <div class="use-case-icon">{useCase.icon}</div>
+          <h3>{useCase.title}</h3>
+          <p>{useCase.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .use-cases {
+    background: #fbfbfd;
+  }
+
+  .use-cases-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .use-case-card {
+    background: white;
+    border-radius: 18px;
+    padding: 36px 28px;
+    text-align: center;
+    border: 1px solid #e8e8ed;
+    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .use-case-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #803B85, #9B4BA0);
+    transform: scaleX(0);
+    transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .use-case-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .use-case-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .use-case-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    display: block;
+    transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .use-case-card:hover .use-case-icon {
+    transform: scale(1.2) rotate(10deg);
+  }
+
+  .use-case-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin-bottom: 10px;
+  }
+
+  .use-case-card p {
+    font-size: 14px;
+    color: #6e6e73;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  @media (max-width: 1024px) {
+    .use-cases-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .use-cases-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+

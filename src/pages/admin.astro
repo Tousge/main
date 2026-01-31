@@ -1,0 +1,1488 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+  TYPE_BUSINESS_LABELS,
+  INTEGRATION_MLM_LABELS,
+  MODELE_MLM_LABELS,
+  OBJECTIF_MLM_LABELS,
+  FONCTIONNALITE_LABELS,
+  TECHNOLOGIE_LABELS,
+  BUDGET_LABELS,
+  DELAI_LABELS
+} from '../types/devis';
+
+// Désactiver le pré-rendu pour cette page
+export const prerender = false;
+
+// Exposer les labels au client
+const labelsJSON = JSON.stringify({
+  TYPE_BUSINESS_LABELS,
+  INTEGRATION_MLM_LABELS,
+  MODELE_MLM_LABELS,
+  OBJECTIF_MLM_LABELS,
+  FONCTIONNALITE_LABELS,
+  TECHNOLOGIE_LABELS,
+  BUDGET_LABELS,
+  DELAI_LABELS
+});
+---
+
+<BaseLayout
+  title="Administration - Tousgether"
+  description="Espace d'administration Tousgether"
+  noindex={true}
+  currentPage="admin"
+>
+  <section class="admin-section">
+    <!-- Background Elements -->
+    <div class="bg-pattern"></div>
+    <div class="bg-gradient"></div>
+    
+    <div class="container">
+      <!-- Login Form -->
+      <div id="login-container" class="login-container">
+        <div class="login-card">
+          <div class="login-logo">
+            <div class="logo-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+          </div>
+          <div class="login-header">
+            <h1>Espace Administration</h1>
+            <p>Accédez aux demandes de devis</p>
+          </div>
+          <form id="login-form" class="login-form">
+            <div class="input-group">
+              <div class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+              </div>
+              <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                placeholder="Mot de passe"
+                required
+                autocomplete="current-password"
+              >
+            </div>
+            <button type="submit" class="login-btn">
+              <span class="btn-content">
+                <span class="btn-text">Connexion</span>
+                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </span>
+              <span class="btn-loader">
+                <span class="loader-dot"></span>
+                <span class="loader-dot"></span>
+                <span class="loader-dot"></span>
+              </span>
+            </button>
+            <p id="login-error" class="error-message"></p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Admin Dashboard -->
+      <div id="dashboard-container" class="dashboard-container" style="display: none;">
+        <!-- Dashboard Header -->
+        <header class="dashboard-header">
+          <div class="header-content">
+            <div class="header-title">
+              <div class="title-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <div>
+                <h1>Dashboard</h1>
+                <p class="header-subtitle">Gestion des demandes de devis</p>
+              </div>
+            </div>
+            <div class="header-actions">
+              <button id="refresh-btn" class="action-btn" title="Rafraîchir les données">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                </svg>
+              </button>
+              <button id="logout-btn" class="action-btn logout" title="Déconnexion">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Stats Overview -->
+        <div class="stats-section">
+          <div class="stats-grid">
+            <div class="stat-card stat-primary">
+              <div class="stat-decoration"></div>
+              <div class="stat-content">
+                <div class="stat-header">
+                  <span class="stat-label">Total demandes</span>
+                  <div class="stat-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                      <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="stat-value" id="total-devis">0</div>
+                <div class="stat-trend">
+                  <span id="devis-count-label">demandes enregistrées</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-content">
+                <div class="stat-header">
+                  <span class="stat-label">Aujourd'hui</span>
+                  <div class="stat-icon-wrap today">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 6v6l4 2"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="stat-value" id="today-devis">0</div>
+                <div class="stat-trend">
+                  <span>nouvelles demandes</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-content">
+                <div class="stat-header">
+                  <span class="stat-label">Cette semaine</span>
+                  <div class="stat-icon-wrap week">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                      <path d="M16 2v4M8 2v4M3 10h18"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="stat-value" id="week-devis">0</div>
+                <div class="stat-trend">
+                  <span>sur 7 jours</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-content">
+                <div class="stat-header">
+                  <span class="stat-label">Budget moyen</span>
+                  <div class="stat-icon-wrap budget">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="stat-value stat-budget" id="avg-budget">—</div>
+                <div class="stat-trend">
+                  <span>estimation</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+          <div class="content-card">
+            <!-- Table Header -->
+            <div class="table-header">
+              <div class="table-title">
+                <h2>Demandes récentes</h2>
+                <span class="badge" id="results-count">0</span>
+              </div>
+              <div class="table-controls">
+                <div class="search-wrapper">
+                  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                  </svg>
+                  <input type="text" id="search-input" placeholder="Rechercher par nom, email, entreprise...">
+                  <kbd class="search-shortcut">⌘K</kbd>
+                </div>
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-wrapper">
+              <table id="devis-table">
+                <thead>
+                  <tr>
+                    <th class="th-date">Date</th>
+                    <th class="th-contact">Contact</th>
+                    <th class="th-budget">Budget</th>
+                    <th class="th-delai">Délai</th>
+                    <th class="th-actions"></th>
+                  </tr>
+                </thead>
+                <tbody id="devis-tbody">
+                  <tr class="loading-row">
+                    <td colspan="5">
+                      <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <span>Chargement des données...</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>
+
+<script define:vars={{ labelsJSON }}>
+  // Labels pour l'affichage
+  const LABELS = JSON.parse(labelsJSON);
+  
+  // State
+  let currentPassword = '';
+  let allDevis = [];
+
+  // Elements
+  const loginContainer = document.getElementById('login-container');
+  const dashboardContainer = document.getElementById('dashboard-container');
+  const loginForm = document.getElementById('login-form');
+  const loginError = document.getElementById('login-error');
+  const passwordInput = document.getElementById('password');
+  const devisTbody = document.getElementById('devis-tbody');
+  const searchInput = document.getElementById('search-input');
+
+  // Format date complet
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  // Format date relative
+  function formatRelativeDate(dateStr) {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+    if (diffMinutes < 60) return `Il y a ${diffMinutes}min`;
+    if (diffHours < 24) return `Il y a ${diffHours}h`;
+    if (diffDays === 0) return "Aujourd'hui";
+    if (diffDays === 1) return "Hier";
+    if (diffDays < 7) return `Il y a ${diffDays}j`;
+    
+    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  }
+
+  // API call
+  async function apiCall(action, id = null) {
+    const response = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: currentPassword, action, id })
+    });
+    return response.json();
+  }
+
+  // Login
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = loginForm.querySelector('button');
+    btn.classList.add('loading');
+    loginError.classList.remove('visible');
+    
+    currentPassword = passwordInput.value;
+    const result = await apiCall('list');
+    
+    btn.classList.remove('loading');
+    
+    if (result.success) {
+      sessionStorage.setItem('adminAuth', currentPassword);
+      showDashboard(result.data);
+    } else {
+      loginError.textContent = result.message;
+      loginError.classList.add('visible');
+      passwordInput.focus();
+    }
+  });
+
+  // Show dashboard with animation
+  function showDashboard(data) {
+    loginContainer.style.display = 'none';
+    dashboardContainer.style.display = 'block';
+    dashboardContainer.classList.add('fade-in');
+    allDevis = data;
+    renderTable(data);
+    updateStats(data);
+  }
+
+  // Update stats with animation
+  function updateStats(data) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    weekAgo.setHours(0, 0, 0, 0);
+
+    animateValue('total-devis', data.length);
+    document.getElementById('results-count').textContent = data.length;
+    
+    const todayCount = data.filter(d => new Date(d.created_at) >= today).length;
+    animateValue('today-devis', todayCount);
+    
+    const weekCount = data.filter(d => new Date(d.created_at) >= weekAgo).length;
+    animateValue('week-devis', weekCount);
+
+    // Budget moyen
+    const budgetOrder = ['moins_1500', '1500_3000', '3000_6000', '6000_10000', 'plus_10000'];
+    const budgetValues = data.map(d => budgetOrder.indexOf(d.budget)).filter(i => i >= 0);
+    if (budgetValues.length > 0) {
+      const avgIndex = Math.round(budgetValues.reduce((a, b) => a + b, 0) / budgetValues.length);
+      document.getElementById('avg-budget').textContent = LABELS.BUDGET_LABELS[budgetOrder[avgIndex]] || '—';
+    }
+  }
+
+  // Animate number
+  function animateValue(id, end, duration = 500) {
+    const el = document.getElementById(id);
+    const start = parseInt(el.textContent) || 0;
+    const range = end - start;
+    const startTime = performance.now();
+    
+    function update(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(start + range * easeOut);
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+
+  // Get budget class
+  function getBudgetClass(budget) {
+    const map = {
+      'moins_1500': 'budget-low',
+      '1500_3000': 'budget-medium',
+      '3000_6000': 'budget-medium',
+      '6000_10000': 'budget-high',
+      'plus_10000': 'budget-premium',
+      'discuter': 'budget-tbd'
+    };
+    return map[budget] || '';
+  }
+
+  // Get delai class
+  function getDelaiClass(delai) {
+    const map = {
+      'moins_30_jours': 'delai-urgent',
+      '1_2_mois': 'delai-soon',
+      '2_4_mois': 'delai-normal',
+      'plus_4_mois': 'delai-flex',
+      'pas_de_delai': 'delai-flex'
+    };
+    return map[delai] || '';
+  }
+
+  // Render table
+  function renderTable(data) {
+    document.getElementById('results-count').textContent = data.length;
+    
+    if (data.length === 0) {
+      devisTbody.innerHTML = `
+        <tr class="empty-row">
+          <td colspan="5">
+            <div class="empty-state">
+              <div class="empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                  <path d="M14 2v6h6M12 18v-6M9 15l3-3 3 3"/>
+                </svg>
+              </div>
+              <h3>Aucune demande</h3>
+              <p>Les nouvelles demandes apparaîtront ici</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    devisTbody.innerHTML = data.map((devis, index) => {
+      // Utilise le slug sécurisé au lieu de l'ID brut
+      const slug = devis.slug;
+      return `
+      <tr data-slug="${slug}" style="animation-delay: ${index * 20}ms" onclick="viewDevis('${slug}')">
+        <td class="td-date">
+          <div class="date-cell">
+            <span class="date-main">${new Date(devis.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}</span>
+            <span class="date-time">${new Date(devis.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+          </div>
+        </td>
+        <td class="td-contact">
+          <span class="contact-name">${escapeHtml(devis.nom_prenom)}</span>
+        </td>
+        <td class="td-budget">
+          <span class="budget-pill ${getBudgetClass(devis.budget)}">${LABELS.BUDGET_LABELS[devis.budget] || devis.budget}</span>
+        </td>
+        <td class="td-delai">
+          <span class="delai-pill ${getDelaiClass(devis.delai)}">${LABELS.DELAI_LABELS[devis.delai] || devis.delai}</span>
+        </td>
+        <td class="td-actions">
+          <button class="view-btn" onclick="event.stopPropagation(); viewDevis('${slug}')" title="Voir les détails">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </td>
+      </tr>
+    `}).join('');
+  }
+
+  // Escape HTML
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // View devis details - redirect to detail page with secure slug
+  window.viewDevis = function(slug) {
+    window.location.href = `/admin/devis/${slug}`;
+  };
+
+  document.addEventListener('keydown', (e) => {
+    // Search shortcut
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      searchInput.focus();
+    }
+  });
+
+  // Search
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    const filtered = allDevis.filter(d => 
+      d.nom_prenom?.toLowerCase().includes(query) ||
+      d.email?.toLowerCase().includes(query) ||
+      d.entreprise?.toLowerCase().includes(query) ||
+      d.telephone?.includes(query)
+    );
+    renderTable(filtered);
+  });
+
+  // Refresh
+  document.getElementById('refresh-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('refresh-btn');
+    btn.classList.add('spinning');
+    const result = await apiCall('list');
+    setTimeout(() => btn.classList.remove('spinning'), 500);
+    if (result.success) {
+      allDevis = result.data;
+      renderTable(allDevis);
+      updateStats(allDevis);
+    }
+  });
+
+  // Logout
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    sessionStorage.removeItem('adminAuth');
+    currentPassword = '';
+    allDevis = [];
+    passwordInput.value = '';
+    dashboardContainer.style.display = 'none';
+    dashboardContainer.classList.remove('fade-in');
+    loginContainer.style.display = 'flex';
+  });
+
+  // Auto-login if session exists
+  (async function() {
+    const savedAuth = sessionStorage.getItem('adminAuth');
+    if (savedAuth) {
+      currentPassword = savedAuth;
+      const result = await apiCall('list');
+      if (result.success) {
+        showDashboard(result.data);
+      } else {
+        sessionStorage.removeItem('adminAuth');
+      }
+    }
+  })();
+</script>
+
+<style>
+  /* Variables */
+  :root {
+    --admin-bg: #f8f9fb;
+    --admin-surface: #ffffff;
+    --admin-surface-2: #f3f4f6;
+    --admin-border: rgba(0, 0, 0, 0.06);
+    --admin-border-strong: rgba(0, 0, 0, 0.1);
+    --admin-text: #1a1a2e;
+    --admin-text-secondary: #64748b;
+    --admin-text-muted: #94a3b8;
+    --admin-accent: #803B85;
+    --admin-accent-light: #9B4BA0;
+    --admin-gradient: linear-gradient(135deg, #803B85 0%, #E84A8A 100%);
+    --admin-success: #10b981;
+    --admin-warning: #f59e0b;
+    --admin-danger: #ef4444;
+    --admin-radius: 16px;
+    --admin-radius-sm: 10px;
+    --admin-radius-lg: 24px;
+    --admin-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --admin-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --admin-shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Base */
+  .admin-section {
+    min-height: 100vh;
+    padding: 0;
+    background: var(--admin-bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .admin-section .container {
+    max-width: 1400px;
+    padding: 0 32px;
+  }
+
+  /* Background Effects */
+  .bg-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      radial-gradient(rgba(128, 59, 133, 0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  .bg-gradient {
+    position: absolute;
+    top: -30%;
+    right: -20%;
+    width: 80%;
+    height: 80%;
+    background: 
+      radial-gradient(ellipse at center, rgba(128, 59, 133, 0.06) 0%, transparent 60%);
+    pointer-events: none;
+    animation: bgFloat 30s ease-in-out infinite;
+  }
+
+  @keyframes bgFloat {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-3%, 3%); }
+  }
+
+  /* ===== LOGIN ===== */
+  .login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .login-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    padding: 48px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--admin-shadow-lg);
+  }
+
+  .login-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+
+  .logo-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--admin-gradient);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(128, 59, 133, 0.3);
+  }
+
+  .logo-icon svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+  }
+
+  .login-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .login-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--admin-text);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .login-header p {
+    color: var(--admin-text-secondary);
+    font-size: 15px;
+  }
+
+  .input-group {
+    position: relative;
+    margin-bottom: 24px;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--admin-text-muted);
+    pointer-events: none;
+  }
+
+  .input-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .login-form input {
+    width: 100%;
+    padding: 16px 16px 16px 52px;
+    font-size: 15px;
+    color: var(--admin-text);
+    background: var(--admin-surface-2);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .login-form input::placeholder {
+    color: var(--admin-text-muted);
+  }
+
+  .login-form input:focus {
+    outline: none;
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 4px rgba(128, 59, 133, 0.15);
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 16px 24px;
+    background: var(--admin-gradient);
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--admin-radius-sm);
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(128, 59, 133, 0.4);
+  }
+
+  .btn-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.2s;
+  }
+
+  .btn-arrow {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s;
+  }
+
+  .login-btn:hover .btn-arrow {
+    transform: translateX(4px);
+  }
+
+  .btn-loader {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .loader-dot {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    animation: loaderDot 1.2s ease-in-out infinite;
+  }
+
+  .loader-dot:nth-child(2) { animation-delay: 0.15s; }
+  .loader-dot:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes loaderDot {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  .login-btn.loading .btn-content { opacity: 0; }
+  .login-btn.loading .btn-loader { display: flex; }
+
+  .error-message {
+    color: var(--admin-danger);
+    font-size: 14px;
+    text-align: center;
+    margin-top: 16px;
+    padding: 12px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--admin-radius-sm);
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: all 0.2s;
+  }
+
+  .error-message.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ===== DASHBOARD ===== */
+  .dashboard-container {
+    padding: 100px 0 60px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .dashboard-container.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Dashboard Header */
+  .dashboard-header {
+    margin-bottom: 32px;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .title-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--admin-gradient);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(128, 59, 133, 0.3);
+  }
+
+  .title-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+  }
+
+  .header-title h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--admin-text);
+    letter-spacing: -0.03em;
+  }
+
+  .header-subtitle {
+    font-size: 14px;
+    color: var(--admin-text-secondary);
+    margin-top: 2px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .action-btn {
+    width: 44px;
+    height: 44px;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: var(--admin-shadow-sm);
+  }
+
+  .action-btn svg {
+    width: 20px;
+    height: 20px;
+    color: var(--admin-text-secondary);
+    transition: all 0.2s;
+  }
+
+  .action-btn:hover {
+    background: var(--admin-surface);
+    border-color: var(--admin-accent);
+    box-shadow: var(--admin-shadow);
+  }
+
+  .action-btn:hover svg {
+    color: var(--admin-accent);
+  }
+
+  .action-btn.logout:hover {
+    border-color: var(--admin-danger);
+    background: #fef2f2;
+  }
+
+  .action-btn.logout:hover svg {
+    color: var(--admin-danger);
+  }
+
+  .action-btn.spinning svg {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Stats Grid */
+  .stats-section {
+    margin-bottom: 32px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .stat-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    box-shadow: var(--admin-shadow-sm);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--admin-border-strong);
+    box-shadow: var(--admin-shadow-lg);
+  }
+
+  .stat-card.stat-primary {
+    background: var(--admin-gradient);
+    border: none;
+    box-shadow: 0 8px 24px rgba(128, 59, 133, 0.25);
+  }
+
+  .stat-decoration {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+  }
+
+  .stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--admin-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .stat-primary .stat-label {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .stat-icon-wrap {
+    width: 40px;
+    height: 40px;
+    background: var(--admin-surface-2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stat-primary .stat-icon-wrap {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .stat-icon-wrap svg {
+    width: 20px;
+    height: 20px;
+    color: var(--admin-text-secondary);
+  }
+
+  .stat-primary .stat-icon-wrap svg {
+    color: white;
+  }
+
+  .stat-icon-wrap.today { background: #d1fae5; }
+  .stat-icon-wrap.today svg { color: #059669; }
+  
+  .stat-icon-wrap.week { background: #fef3c7; }
+  .stat-icon-wrap.week svg { color: #d97706; }
+  
+  .stat-icon-wrap.budget { background: #f3e8ff; }
+  .stat-icon-wrap.budget svg { color: var(--admin-accent); }
+
+  .stat-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--admin-text);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .stat-primary .stat-value {
+    color: white;
+  }
+
+  .stat-budget {
+    font-size: 22px;
+  }
+
+  .stat-trend {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--admin-text-muted);
+  }
+
+  .stat-primary .stat-trend {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Main Content Card */
+  .main-content {
+    margin-bottom: 32px;
+  }
+
+  .content-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--admin-shadow);
+  }
+
+  .table-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--admin-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .table-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .table-title h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--admin-text);
+  }
+
+  .badge {
+    padding: 4px 12px;
+    background: var(--admin-gradient);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+  }
+
+  .search-wrapper {
+    position: relative;
+    width: 320px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--admin-text-muted);
+    pointer-events: none;
+  }
+
+  .search-wrapper input {
+    width: 100%;
+    padding: 12px 70px 12px 44px;
+    background: var(--admin-surface-2);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    color: var(--admin-text);
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .search-wrapper input::placeholder {
+    color: var(--admin-text-muted);
+  }
+
+  .search-wrapper input:focus {
+    outline: none;
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px rgba(128, 59, 133, 0.15);
+  }
+
+  .search-shortcut {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 4px 8px;
+    background: var(--admin-border);
+    color: var(--admin-text-muted);
+    font-size: 11px;
+    font-family: inherit;
+    border-radius: 6px;
+    border: none;
+  }
+
+  /* Table */
+  .table-wrapper {
+    overflow-x: auto;
+    padding: 0 24px 24px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+  }
+
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--admin-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: transparent;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 20px 24px;
+    font-size: 13px;
+    color: var(--admin-text);
+    vertical-align: middle;
+    background: var(--admin-surface);
+  }
+
+  td:first-child {
+    border-radius: var(--admin-radius-sm) 0 0 var(--admin-radius-sm);
+  }
+
+  td:last-child {
+    border-radius: 0 var(--admin-radius-sm) var(--admin-radius-sm) 0;
+  }
+
+  tbody tr {
+    transition: all 0.15s;
+    animation: rowFadeIn 0.3s ease backwards;
+    cursor: pointer;
+    box-shadow: var(--admin-shadow-sm);
+  }
+
+  tbody tr:nth-child(even) td {
+    background: #f8f9fb;
+  }
+
+  @keyframes rowFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
+
+  tbody tr:hover td {
+    background: #eef0f4;
+  }
+
+  tbody tr:hover {
+    box-shadow: var(--admin-shadow);
+    transform: translateY(-2px);
+  }
+
+  .loading-row td,
+  .empty-row td {
+    padding: 60px 24px;
+    vertical-align: middle;
+    text-align: center;
+    border-radius: var(--admin-radius-sm);
+  }
+
+  .loading-row,
+  .empty-row {
+    cursor: default;
+  }
+
+  .loading-row:hover,
+  .empty-row:hover {
+    transform: none;
+    box-shadow: var(--admin-shadow-sm);
+  }
+
+  .loading-row:hover td,
+  .empty-row:hover td {
+    background: var(--admin-surface) !important;
+  }
+
+  .loading-state,
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--admin-text-secondary);
+  }
+
+  .loading-spinner {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--admin-border);
+    border-top-color: var(--admin-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .empty-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--admin-surface-2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+  }
+
+  .empty-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--admin-text-muted);
+  }
+
+  .empty-state h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--admin-text);
+  }
+
+  .empty-state p {
+    font-size: 12px;
+    color: var(--admin-text-muted);
+  }
+
+  /* Date Cell */
+  .td-date {
+    width: 90px;
+  }
+
+  .date-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .date-main {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--admin-text);
+    text-transform: capitalize;
+  }
+
+  .date-time {
+    font-size: 11px;
+    color: var(--admin-text-muted);
+  }
+
+  /* Contact Cell */
+  .td-contact {
+    min-width: 140px;
+    max-width: 200px;
+  }
+
+  .contact-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--admin-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Budget Cell */
+  .td-budget {
+    width: 110px;
+  }
+
+  .budget-pill {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .budget-low {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+
+  .budget-medium {
+    background: #fef3c7;
+    color: #b45309;
+  }
+
+  .budget-high {
+    background: #d1fae5;
+    color: #047857;
+  }
+
+  .budget-premium {
+    background: #f3e8ff;
+    color: #7c3aed;
+  }
+
+  .budget-tbd {
+    background: #e0e7ff;
+    color: #4338ca;
+  }
+
+  /* Delai Cell */
+  .td-delai {
+    width: 100px;
+  }
+
+  .delai-pill {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .delai-urgent {
+    background: #fef2f2;
+    color: #dc2626;
+  }
+
+  .delai-soon {
+    background: #fef3c7;
+    color: #b45309;
+  }
+
+  .delai-normal {
+    background: #dbeafe;
+    color: #2563eb;
+  }
+
+  .delai-flex {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+
+  /* Actions Cell */
+  .td-actions {
+    width: 50px;
+    text-align: center;
+  }
+
+  .view-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    color: var(--admin-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .view-btn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .view-btn:hover {
+    background: var(--admin-accent);
+    border-color: var(--admin-accent);
+    color: white;
+  }
+
+  /* Responsive */
+  @media (max-width: 1200px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .td-delai,
+    .th-delai {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .admin-section .container {
+      padding: 0 12px;
+    }
+
+    .dashboard-container {
+      padding: 90px 0 40px;
+    }
+
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .table-header {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 16px;
+    }
+
+    .search-wrapper {
+      width: 100%;
+    }
+
+    .table-wrapper {
+      padding: 0 12px 12px;
+    }
+
+    .td-budget,
+    .th-budget {
+      display: none;
+    }
+
+      th, td {
+        padding: 16px 12px;
+      }
+
+     .td-contact {
+       min-width: 120px;
+       max-width: 160px;
+     }
+
+     .contact-name {
+       font-size: 12px;
+     }
+
+    .date-main {
+      font-size: 11px;
+    }
+
+    .date-time {
+      font-size: 10px;
+    }
+
+    .view-btn {
+      width: 28px;
+      height: 28px;
+    }
+
+    .view-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+</style>

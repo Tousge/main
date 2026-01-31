@@ -1,0 +1,171 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import About from '../components/sections/About.astro';
+import WhyMLM from '../components/sections/WhyMLM.astro';
+import Solutions from '../components/sections/Solutions.astro';
+import Process from '../components/sections/Process.astro';
+import Advantages from '../components/sections/Advantages.astro';
+import UseCases from '../components/sections/UseCases.astro';
+import MLMSchema from '../components/sections/MLMSchema.astro';
+import Testimonials from '../components/sections/Testimonials.astro';
+import CTA from '../components/sections/CTA.astro';
+
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "Tousgether",
+      "description": "Expert en création et déploiement de systèmes MLM digitaux pour les entreprises",
+      "url": "https://tousgether.com",
+      "logo": "https://tousgether.com/favicon.svg",
+      "foundingDate": "2023",
+      "sameAs": [
+        "https://www.linkedin.com/company/tousgether"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "contact@tousgether.com",
+        "contactType": "customer service",
+        "availableLanguage": "French"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "6 rue Rose Dieng-Kuntz",
+        "postalCode": "44300",
+        "addressLocality": "Nantes",
+        "addressCountry": "FR"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "name": "Tousgether",
+      "url": "https://tousgether.com",
+      "description": "Solution MLM clé-en-main pour les entreprises",
+      "inLanguage": "fr-FR",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Tousgether"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://tousgether.com/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Service",
+      "serviceType": "MLM Software Development",
+      "provider": {
+        "@type": "Organization",
+        "name": "Tousgether"
+      },
+      "name": "Solution MLM Clé-en-Main",
+      "description": "Création, intégration et automatisation de modèles MLM performants et duplicables",
+      "areaServed": {
+        "@type": "Country",
+        "name": "France"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Services MLM",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Création de plan MLM personnalisé"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Intégration multi-plateformes"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Automatisation des commissions"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Formation et support"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Qu'est-ce qu'un système MLM ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Le MLM (Marketing Multi-Niveau) est un modèle commercial où les revenus proviennent à la fois de ventes directes et d'un système de parrainage permettant de créer un réseau de distributeurs. Tousgether vous aide à créer et automatiser ce type de système."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Combien coûte la mise en place d'un système MLM ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Le coût varie selon vos besoins spécifiques. Nous proposons des solutions sur-mesure adaptées à votre budget. Demandez un devis gratuit pour obtenir une estimation personnalisée."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Quels types de plans MLM proposez-vous ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Nous proposons tous les types de plans : binaire, unilevel, matrice, hybride et sur-mesure. Notre équipe vous accompagne pour choisir le plan le plus adapté à votre activité."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Le système est-il conforme à la réglementation ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui, tous nos systèmes sont conçus pour être 100% conformes à la législation française et européenne. Nous intégrons les meilleures pratiques pour garantir la légalité de votre activité MLM."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Proposez-vous une formation pour utiliser la plateforme ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui, nous proposons une formation complète pour vous et votre équipe. Notre support est également disponible pour répondre à toutes vos questions après le déploiement."
+          }
+        }
+      ]
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title="Tousgether | Solution MLM Clé-en-Main pour Entreprises - Création & Automatisation"
+  description="Tousgether accompagne les entreprises dans la création, l'intégration et l'automatisation de systèmes MLM performants. Plans de rémunération sur-mesure, conformes et duplicables. Demandez votre devis gratuit."
+  schema={schema}
+  currentPage="home"
+>
+  <Hero />
+  <About />
+  <WhyMLM />
+  <Solutions />
+  <Process />
+  <Advantages />
+  <UseCases />
+  <MLMSchema />
+  <Testimonials />
+  <CTA />
+</BaseLayout>
+

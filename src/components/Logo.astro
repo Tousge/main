@@ -1,0 +1,29 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<svg 
+  class={`logo-icon ${className}`} 
+  viewBox="0 0 60 90" 
+  fill="none" 
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <circle cx="45" cy="15" r="13" fill="#E84A8A"/>
+  <circle cx="15" cy="45" r="13" fill="#803B85"/>
+  <circle cx="45" cy="45" r="13" fill="#E991B2"/>
+  <circle cx="15" cy="75" r="13" fill="#9B59B6"/>
+</svg>
+
+<style>
+  .logo-icon {
+    width: auto;
+    height: 1.1em;
+    flex-shrink: 0;
+    transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+</style>
+

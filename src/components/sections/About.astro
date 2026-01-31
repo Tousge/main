@@ -1,0 +1,361 @@
+---
+import SectionHeader from '../SectionHeader.astro';
+
+const features = [
+  {
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+      <path d="M2 17l10 5 10-5"></path>
+      <path d="M2 12l10 5 10-5"></path>
+    </svg>`,
+    title: 'MLM Digital',
+    description: 'Systèmes de parrainage multi-niveaux 100% digitalisés et automatisés'
+  },
+  {
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+      <line x1="8" y1="21" x2="16" y2="21"></line>
+      <line x1="12" y1="17" x2="12" y2="21"></line>
+    </svg>`,
+    title: 'Multi-plateformes',
+    description: 'Intégration MLM sur WordPress, Shopify, Bubble et plus encore'
+  },
+  {
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+    </svg>`,
+    title: 'Automatisation',
+    description: 'Calcul des commissions, dashboards et paiements automatiques'
+  },
+  {
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>`,
+    title: 'Sur-mesure',
+    description: 'Plans de rémunération personnalisés adaptés à votre business'
+  }
+];
+
+const stats = [
+  { number: '50+', label: 'Projets déployés', suffix: '' },
+  { number: '98', label: 'Clients satisfaits', suffix: '%' },
+  { number: '5+', label: "Années d'expertise", suffix: '' }
+];
+---
+
+<section class="section about" id="about">
+  <!-- Background decorations -->
+  <div class="about-bg">
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+  </div>
+  
+  <div class="container">
+    <SectionHeader 
+      tag="À propos"
+      title="Qui sommes-nous ?"
+    />
+    
+    <div class="about-content">
+      <div class="about-text animate-on-scroll">
+        <h3 class="about-lead">
+          <strong>Tousgether</strong> est votre partenaire expert en création et déploiement 
+          de systèmes MLM digitaux sur-mesure.
+        </h3>
+        <p class="about-description">
+          Forts de notre expertise dans le marketing digital, les marketplaces et 
+          l'automatisation, nous concevons des plans de rémunération innovants et 
+          conformes qui transforment vos clients en ambassadeurs actifs de votre marque.
+        </p>
+        
+        <!-- Premium Stats -->
+        <div class="about-stats">
+          {stats.map(stat => (
+            <div class="stat-card">
+              <span class="stat-number">
+                {stat.number}<span class="stat-suffix">{stat.suffix}</span>
+              </span>
+              <span class="stat-label">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div class="about-features">
+        {features.map((feature, index) => (
+          <div class="feature-card animate-on-scroll" style={`--delay: ${index * 0.1}s`}>
+            <div class="feature-icon" set:html={feature.icon} />
+            <div class="feature-content">
+              <h4>{feature.title}</h4>
+              <p>{feature.description}</p>
+            </div>
+            <div class="feature-arrow">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    background: #fafafa;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Background */
+  .about-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .bg-gradient {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    top: -200px;
+    right: -200px;
+    background: radial-gradient(circle, rgba(128, 59, 133, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .bg-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(128, 59, 133, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse at 70% 30%, black 0%, transparent 50%);
+    -webkit-mask-image: radial-gradient(ellipse at 70% 30%, black 0%, transparent 50%);
+  }
+
+  /* Content */
+  .about-content {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 80px;
+    align-items: start;
+    position: relative;
+    z-index: 1;
+  }
+
+  .about-text {
+    padding-top: 20px;
+  }
+
+  .about-lead {
+    font-size: 28px;
+    color: #1d1d1f;
+    margin-bottom: 24px;
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .about-lead strong {
+    background: linear-gradient(135deg, #803B85 0%, #E84A8A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .about-description {
+    color: #6e6e73;
+    margin-bottom: 48px;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  /* Premium Stats */
+  .about-stats {
+    display: flex;
+    gap: 24px;
+  }
+
+  .stat-card {
+    flex: 1;
+    background: white;
+    border-radius: 20px;
+    padding: 28px 24px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(128, 59, 133, 0.12);
+    border-color: rgba(128, 59, 133, 0.2);
+  }
+
+  .stat-number {
+    display: block;
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #1d1d1f 0%, #803B85 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-suffix {
+    font-size: 32px;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: #86868b;
+    font-weight: 500;
+  }
+
+  /* Feature Cards */
+  .about-features {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .feature-card {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 20px;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    animation-delay: var(--delay);
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(128, 59, 133, 0.03) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .feature-card:hover::before {
+    opacity: 1;
+  }
+
+  .feature-card:hover {
+    transform: translateX(8px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border-color: rgba(128, 59, 133, 0.2);
+  }
+
+  .feature-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(128, 59, 133, 0.1) 0%, rgba(232, 74, 138, 0.1) 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #803B85;
+    flex-shrink: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    z-index: 1;
+  }
+
+  .feature-card:hover .feature-icon {
+    background: linear-gradient(135deg, #803B85 0%, #E84A8A 100%);
+    color: white;
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 8px 24px rgba(128, 59, 133, 0.3);
+  }
+
+  .feature-content {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .feature-card h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin-bottom: 6px;
+  }
+
+  .feature-card p {
+    font-size: 15px;
+    color: #6e6e73;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .feature-arrow {
+    width: 40px;
+    height: 40px;
+    background: #f5f5f7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #86868b;
+    flex-shrink: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    z-index: 1;
+  }
+
+  .feature-card:hover .feature-arrow {
+    background: #803B85;
+    color: white;
+    transform: translateX(4px);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .about-content {
+      grid-template-columns: 1fr;
+      gap: 64px;
+    }
+
+    .about-stats {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .about-stats {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .stat-card {
+      padding: 24px;
+    }
+
+    .stat-number {
+      font-size: 40px;
+    }
+
+    .feature-card {
+      padding: 24px;
+    }
+
+    .feature-arrow {
+      display: none;
+    }
+  }
+</style>

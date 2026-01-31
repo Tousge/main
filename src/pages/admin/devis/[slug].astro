@@ -1,0 +1,1178 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  TYPE_BUSINESS_LABELS,
+  INTEGRATION_MLM_LABELS,
+  MODELE_MLM_LABELS,
+  OBJECTIF_MLM_LABELS,
+  FONCTIONNALITE_LABELS,
+  TECHNOLOGIE_LABELS,
+  BUDGET_LABELS,
+  DELAI_LABELS
+} from '../../../types/devis';
+
+// Désactiver le pré-rendu pour cette page
+export const prerender = false;
+
+const { slug } = Astro.params;
+
+// Exposer les labels au client
+const labelsJSON = JSON.stringify({
+  TYPE_BUSINESS_LABELS,
+  INTEGRATION_MLM_LABELS,
+  MODELE_MLM_LABELS,
+  OBJECTIF_MLM_LABELS,
+  FONCTIONNALITE_LABELS,
+  TECHNOLOGIE_LABELS,
+  BUDGET_LABELS,
+  DELAI_LABELS
+});
+---
+
+<BaseLayout
+  title="Détail demande - Administration"
+  description="Détail d'une demande de devis"
+  noindex={true}
+  currentPage="admin"
+>
+  <section class="admin-section">
+    <!-- Background Elements -->
+    <div class="bg-pattern"></div>
+    <div class="bg-gradient"></div>
+    
+    <div class="container">
+      <!-- Loading State -->
+      <div id="loading-container" class="loading-container">
+        <div class="loading-card">
+          <div class="loading-spinner"></div>
+          <p>Chargement...</p>
+        </div>
+      </div>
+
+      <!-- Auth Required -->
+      <div id="auth-container" class="auth-container" style="display: none;">
+        <div class="auth-card">
+          <div class="auth-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+          </div>
+          <h2>Session expirée</h2>
+          <p>Veuillez vous reconnecter pour accéder à cette page.</p>
+          <a href="/admin" class="btn-primary">Retour à la connexion</a>
+        </div>
+      </div>
+
+      <!-- Detail Content -->
+      <div id="detail-container" class="detail-container" style="display: none;">
+        <!-- Header -->
+        <header class="detail-header">
+          <div class="header-left">
+            <a href="/admin" class="back-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              Retour
+            </a>
+          </div>
+          <div class="header-actions">
+            <a id="email-link" href="" class="btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <path d="M22 6l-10 7L2 6"/>
+              </svg>
+              Contacter
+            </a>
+            <button id="delete-btn" class="btn-delete">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+              </svg>
+              Supprimer
+            </button>
+          </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="detail-content" id="detail-content">
+          <!-- Dynamic content will be injected here -->
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script define:vars={{ labelsJSON, slug }}>
+  // Labels pour l'affichage
+  const LABELS = JSON.parse(labelsJSON);
+  const devisSlug = slug;
+  
+  // Elements
+  const loadingContainer = document.getElementById('loading-container');
+  const authContainer = document.getElementById('auth-container');
+  const detailContainer = document.getElementById('detail-container');
+  const detailContent = document.getElementById('detail-content');
+
+  // Format date complet
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  // Format relative time
+  function formatRelativeTime(dateStr) {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = now - date;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor(diff / (1000 * 60));
+    
+    if (days > 0) return `Il y a ${days} jour${days > 1 ? 's' : ''}`;
+    if (hours > 0) return `Il y a ${hours} heure${hours > 1 ? 's' : ''}`;
+    if (minutes > 0) return `Il y a ${minutes} minute${minutes > 1 ? 's' : ''}`;
+    return 'À l\'instant';
+  }
+
+  // Get initials
+  function getInitials(name) {
+    if (!name) return '?';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  // Escape HTML
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // Get budget class
+  function getBudgetClass(budget) {
+    const map = {
+      'moins_1500': 'budget-low',
+      '1500_3000': 'budget-medium',
+      '3000_6000': 'budget-medium',
+      '6000_10000': 'budget-high',
+      'plus_10000': 'budget-premium',
+      'discuter': 'budget-tbd'
+    };
+    return map[budget] || '';
+  }
+
+  // API call - utilise les slugs sécurisés au lieu des IDs
+  async function apiCall(action, slug = null) {
+    const password = sessionStorage.getItem('adminAuth');
+    if (!password) return { success: false, message: 'Non authentifié' };
+    
+    const response = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, action, slug })
+    });
+    return response.json();
+  }
+
+  // Show states
+  function showLoading() {
+    loadingContainer.style.display = 'flex';
+    authContainer.style.display = 'none';
+    detailContainer.style.display = 'none';
+  }
+
+  function showAuth() {
+    loadingContainer.style.display = 'none';
+    authContainer.style.display = 'flex';
+    detailContainer.style.display = 'none';
+  }
+
+  function showDetail() {
+    loadingContainer.style.display = 'none';
+    authContainer.style.display = 'none';
+    detailContainer.style.display = 'block';
+    detailContainer.classList.add('fade-in');
+  }
+
+  // Render detail
+  function renderDetail(devis) {
+    document.getElementById('email-link').href = `mailto:${devis.email}?subject=Votre demande de devis MLM - Tousgether`;
+
+    detailContent.innerHTML = `
+      <!-- Hero Card -->
+      <div class="hero-card">
+        <div class="hero-left">
+          <div class="hero-avatar">${getInitials(devis.nom_prenom)}</div>
+          <div class="hero-info">
+            <h1>${escapeHtml(devis.nom_prenom)}</h1>
+            <p class="hero-company">${escapeHtml(devis.entreprise)}</p>
+            <div class="hero-badges">
+              <span class="badge badge-time">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                ${formatRelativeTime(devis.created_at)}
+              </span>
+              <span class="badge badge-budget ${getBudgetClass(devis.budget)}">${LABELS.BUDGET_LABELS[devis.budget] || devis.budget}</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-box">
+            <span class="stat-number">${(devis.fonctionnalites || []).length}</span>
+            <span class="stat-label">Fonctionnalités</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number">${(devis.modele_mlm || []).length}</span>
+            <span class="stat-label">Modèles MLM</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid Layout -->
+      <div class="cards-grid">
+        <!-- Contact Card -->
+        <div class="card">
+          <div class="card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <h3>Coordonnées</h3>
+          </div>
+          <div class="card-body">
+            <div class="contact-list">
+              <a href="mailto:${escapeHtml(devis.email)}" class="contact-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+                <div class="contact-text">
+                  <span class="contact-label">Email</span>
+                  <span class="contact-value">${escapeHtml(devis.email)}</span>
+                </div>
+              </a>
+              <a href="tel:${escapeHtml(devis.telephone)}" class="contact-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+                <div class="contact-text">
+                  <span class="contact-label">Téléphone</span>
+                  <span class="contact-value">${escapeHtml(devis.telephone)}</span>
+                </div>
+              </a>
+              ${devis.site_web ? `
+              <a href="${escapeHtml(devis.site_web)}" target="_blank" rel="noopener" class="contact-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+                <div class="contact-text">
+                  <span class="contact-label">Site web</span>
+                  <span class="contact-value">${escapeHtml(devis.site_web)}</span>
+                </div>
+              </a>
+              ` : ''}
+            </div>
+            ${devis.recontact_telephone ? `
+            <div class="callback-tag">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+              Souhaite être rappelé
+            </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Project Card -->
+        <div class="card">
+          <div class="card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            <h3>Projet MLM</h3>
+          </div>
+          <div class="card-body">
+            <div class="info-row">
+              <span class="info-label">Type de business</span>
+              <span class="info-value">${LABELS.TYPE_BUSINESS_LABELS[devis.type_business] || devis.type_business}${devis.type_business_autre ? ` — ${escapeHtml(devis.type_business_autre)}` : ''}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Objectif principal</span>
+              <span class="info-value">${LABELS.OBJECTIF_MLM_LABELS[devis.objectif_mlm] || devis.objectif_mlm}${devis.objectif_mlm_autre ? ` — ${escapeHtml(devis.objectif_mlm_autre)}` : ''}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Intégration souhaitée</span>
+              <div class="tags-row">
+                ${(devis.integration_mlm || []).map(i => `<span class="tag">${LABELS.INTEGRATION_MLM_LABELS[i] || i}</span>`).join('')}
+              </div>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Modèles MLM envisagés</span>
+              <div class="tags-row">
+                ${(devis.modele_mlm || []).map(m => `<span class="tag tag-accent">${LABELS.MODELE_MLM_LABELS[m] || m}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features Card -->
+        <div class="card">
+          <div class="card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <h3>Fonctionnalités</h3>
+            <span class="card-badge">${(devis.fonctionnalites || []).length}</span>
+          </div>
+          <div class="card-body">
+            <div class="features-grid">
+              ${(devis.fonctionnalites || []).map(f => `
+                <div class="feature-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                  <span>${LABELS.FONCTIONNALITE_LABELS[f] || f}</span>
+                </div>
+              `).join('')}
+              ${devis.fonctionnalites_autre ? `
+                <div class="feature-item feature-custom">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>
+                  <span>${escapeHtml(devis.fonctionnalites_autre)}</span>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+
+        <!-- Technical Card -->
+        <div class="card">
+          <div class="card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <h3>Technique & Budget</h3>
+          </div>
+          <div class="card-body">
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <span class="metric-label">Technologie</span>
+                <span class="metric-value tech">${LABELS.TECHNOLOGIE_LABELS[devis.technologie] || devis.technologie}</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Budget estimé</span>
+                <span class="metric-value ${getBudgetClass(devis.budget)}">${LABELS.BUDGET_LABELS[devis.budget] || devis.budget}</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Délai souhaité</span>
+                <span class="metric-value">${LABELS.DELAI_LABELS[devis.delai] || devis.delai}</span>
+              </div>
+            </div>
+            ${devis.base_donnees_existante ? `
+              <div class="db-notice">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                <div>
+                  <strong>Base de données existante</strong>
+                  ${devis.base_donnees_details ? `<p>${escapeHtml(devis.base_donnees_details)}</p>` : ''}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Description Card - Full Width -->
+        <div class="card card-full">
+          <div class="card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+            <h3>Description du projet</h3>
+          </div>
+          <div class="card-body">
+            <div class="description-text">${escapeHtml(devis.description_projet)}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Meta - N'expose pas l'UUID pour la sécurité -->
+      <div class="meta-bar">
+        <span class="meta-item"><strong>Réf:</strong> <code>${devis.slug}</code></span>
+        <span class="meta-sep">•</span>
+        <span class="meta-item"><strong>IP:</strong> ${escapeHtml(devis.ip_address)}</span>
+        <span class="meta-sep">•</span>
+        <span class="meta-item"><strong>Date:</strong> ${formatDate(devis.created_at)}</span>
+      </div>
+    `;
+  }
+
+  // Delete - utilise le slug sécurisé
+  document.getElementById('delete-btn').addEventListener('click', async () => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette demande ? Cette action est irréversible.')) return;
+
+    const result = await apiCall('delete', devisSlug);
+    if (result.success) {
+      window.location.href = '/admin';
+    } else {
+      alert('Erreur: ' + result.message);
+    }
+  });
+
+  // Load data - utilise le slug sécurisé
+  (async function() {
+    showLoading();
+    
+    const password = sessionStorage.getItem('adminAuth');
+    if (!password) {
+      showAuth();
+      return;
+    }
+
+    const result = await apiCall('get', devisSlug);
+    
+    if (!result.success) {
+      if (result.message === 'Mot de passe incorrect' || result.message === 'Non authentifié') {
+        sessionStorage.removeItem('adminAuth');
+        showAuth();
+      } else {
+        alert('Erreur: ' + result.message);
+        window.location.href = '/admin';
+      }
+      return;
+    }
+
+    renderDetail(result.data);
+    showDetail();
+  })();
+</script>
+
+<style is:global>
+  /* Variables - Consistent with admin.astro */
+  :root {
+    --admin-bg: #f8f9fb;
+    --admin-surface: #ffffff;
+    --admin-surface-2: #f3f4f6;
+    --admin-border: rgba(0, 0, 0, 0.06);
+    --admin-border-strong: rgba(0, 0, 0, 0.1);
+    --admin-text: #1a1a2e;
+    --admin-text-secondary: #64748b;
+    --admin-text-muted: #94a3b8;
+    --admin-accent: #803B85;
+    --admin-accent-light: #9B4BA0;
+    --admin-gradient: linear-gradient(135deg, #803B85 0%, #E84A8A 100%);
+    --admin-success: #10b981;
+    --admin-warning: #f59e0b;
+    --admin-danger: #ef4444;
+    --admin-radius: 16px;
+    --admin-radius-sm: 10px;
+    --admin-radius-lg: 24px;
+    --admin-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --admin-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --admin-shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Base */
+  .admin-section {
+    min-height: 100vh;
+    padding: 0;
+    background: var(--admin-bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .admin-section .container {
+    max-width: 1100px;
+    padding: 0 24px;
+  }
+
+  /* Background */
+  .bg-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(128, 59, 133, 0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  .bg-gradient {
+    position: absolute;
+    top: -30%;
+    right: -20%;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(ellipse at center, rgba(128, 59, 133, 0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* Loading */
+  .loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .loading-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    color: var(--admin-text-secondary);
+  }
+
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--admin-border);
+    border-top-color: var(--admin-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Auth */
+  .auth-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .auth-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    padding: 48px;
+    text-align: center;
+    max-width: 380px;
+    box-shadow: var(--admin-shadow-lg);
+  }
+
+  .auth-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--admin-surface-2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+  }
+
+  .auth-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--admin-text-muted);
+  }
+
+  .auth-card h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--admin-text);
+    margin-bottom: 8px;
+  }
+
+  .auth-card p {
+    color: var(--admin-text-secondary);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  /* Detail Container */
+  .detail-container {
+    padding: 100px 0 60px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: all 0.4s ease;
+  }
+
+  .detail-container.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Header */
+  .detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    color: var(--admin-text);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: var(--admin-shadow-sm);
+  }
+
+  .back-btn:hover {
+    background: var(--admin-surface-2);
+    border-color: var(--admin-accent);
+    color: var(--admin-accent);
+  }
+
+  .back-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-primary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background: var(--admin-gradient);
+    border: none;
+    border-radius: var(--admin-radius-sm);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(128, 59, 133, 0.35);
+  }
+
+  .btn-delete {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: var(--admin-radius-sm);
+    color: var(--admin-danger);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-delete svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .btn-delete:hover {
+    background: #fef2f2;
+    border-color: var(--admin-danger);
+  }
+
+  /* Hero Card */
+  .hero-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--admin-shadow);
+  }
+
+  .hero-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .hero-avatar {
+    width: 56px;
+    height: 56px;
+    background: var(--admin-gradient);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .hero-info h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--admin-text);
+    margin-bottom: 2px;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-company {
+    font-size: 14px;
+    color: var(--admin-text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .hero-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .badge-time {
+    background: var(--admin-surface-2);
+    color: var(--admin-text-secondary);
+  }
+
+  .badge-budget {
+    background: #f3e8ff;
+    color: var(--admin-accent);
+  }
+
+  .badge-budget.budget-low { background: #f3f4f6; color: #6b7280; }
+  .badge-budget.budget-medium { background: #fef3c7; color: #b45309; }
+  .badge-budget.budget-high { background: #d1fae5; color: #047857; }
+  .badge-budget.budget-premium { background: #f3e8ff; color: #7c3aed; }
+  .badge-budget.budget-tbd { background: #e0e7ff; color: #4338ca; }
+
+  .hero-stats {
+    display: flex;
+    gap: 20px;
+  }
+
+  .stat-box {
+    text-align: center;
+    padding: 12px 20px;
+    background: var(--admin-surface-2);
+    border-radius: var(--admin-radius-sm);
+  }
+
+  .stat-number {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--admin-accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--admin-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-top: 4px;
+  }
+
+  /* Cards Grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    overflow: hidden;
+    box-shadow: var(--admin-shadow-sm);
+  }
+
+  .card-full {
+    grid-column: 1 / -1;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--admin-border);
+    background: var(--admin-surface-2);
+  }
+
+  .card-header svg {
+    width: 16px;
+    height: 16px;
+    color: var(--admin-accent);
+    flex-shrink: 0;
+  }
+
+  .card-header h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--admin-text);
+    flex: 1;
+  }
+
+  .card-badge {
+    padding: 2px 8px;
+    background: var(--admin-gradient);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 10px;
+  }
+
+  .card-body {
+    padding: 18px;
+  }
+
+  /* Contact List */
+  .contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .contact-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--admin-surface-2);
+    border: 1px solid transparent;
+    border-radius: var(--admin-radius-sm);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .contact-row:hover {
+    background: #f0f0f5;
+    border-color: var(--admin-border-strong);
+  }
+
+  .contact-row svg {
+    width: 16px;
+    height: 16px;
+    color: var(--admin-text-muted);
+    flex-shrink: 0;
+  }
+
+  .contact-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .contact-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--admin-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .contact-value {
+    display: block;
+    font-size: 13px;
+    color: var(--admin-text);
+    word-break: break-all;
+  }
+
+  .callback-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: #d1fae5;
+    border-radius: 6px;
+    color: #047857;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .callback-tag svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Info Rows */
+  .info-row {
+    margin-bottom: 14px;
+  }
+
+  .info-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .info-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--admin-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 6px;
+  }
+
+  .info-value {
+    font-size: 13px;
+    color: var(--admin-text);
+    line-height: 1.5;
+  }
+
+  .tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag {
+    padding: 5px 10px;
+    background: var(--admin-surface-2);
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--admin-text);
+  }
+
+  .tag-accent {
+    background: #f3e8ff;
+    border-color: rgba(128, 59, 133, 0.15);
+    color: var(--admin-accent);
+  }
+
+  /* Features Grid */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--admin-surface-2);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--admin-text);
+  }
+
+  .feature-item svg {
+    width: 14px;
+    height: 14px;
+    color: var(--admin-success);
+    flex-shrink: 0;
+  }
+
+  .feature-custom {
+    grid-column: 1 / -1;
+    background: #fdf4ff;
+    border: 1px dashed rgba(128, 59, 133, 0.25);
+  }
+
+  .feature-custom svg {
+    color: var(--admin-accent);
+  }
+
+  /* Metrics */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .metric-item {
+    padding: 14px;
+    background: var(--admin-surface-2);
+    border-radius: var(--admin-radius-sm);
+    text-align: center;
+  }
+
+  .metric-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--admin-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 6px;
+  }
+
+  .metric-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--admin-text);
+  }
+
+  .metric-value.tech {
+    color: #2563eb;
+  }
+
+  .metric-value.budget-low { color: #6b7280; }
+  .metric-value.budget-medium { color: #b45309; }
+  .metric-value.budget-high { color: #047857; }
+  .metric-value.budget-premium { color: #7c3aed; }
+  .metric-value.budget-tbd { color: #4338ca; }
+
+  .db-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 12px;
+    background: #e0f2fe;
+    border-radius: 8px;
+    color: #0369a1;
+    font-size: 12px;
+  }
+
+  .db-notice svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .db-notice strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .db-notice p {
+    margin: 0;
+    opacity: 0.85;
+  }
+
+  /* Description */
+  .description-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--admin-text);
+    white-space: pre-wrap;
+    padding: 16px;
+    background: var(--admin-surface-2);
+    border-radius: var(--admin-radius-sm);
+  }
+
+  /* Meta Bar */
+  .meta-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding: 14px 20px;
+    background: var(--admin-surface);
+    border: 1px dashed var(--admin-border-strong);
+    border-radius: var(--admin-radius-sm);
+  }
+
+  .meta-item {
+    font-size: 12px;
+    color: var(--admin-text-muted);
+  }
+
+  .meta-item strong {
+    color: var(--admin-text-secondary);
+  }
+
+  .meta-item code {
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 11px;
+    background: var(--admin-surface-2);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .meta-sep {
+    color: var(--admin-border-strong);
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .hero-card {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .hero-stats {
+      justify-content: center;
+    }
+
+    .metrics-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .admin-section .container {
+      padding: 0 16px;
+    }
+
+    .detail-container {
+      padding: 90px 0 40px;
+    }
+
+    .detail-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .header-actions {
+      flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-delete {
+      justify-content: center;
+    }
+
+    .cards-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .features-grid,
+    .metrics-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-left {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .hero-badges {
+      justify-content: center;
+    }
+
+    .meta-bar {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .meta-sep {
+      display: none;
+    }
+  }
+</style>

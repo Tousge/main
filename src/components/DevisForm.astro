@@ -1,0 +1,1324 @@
+---
+import {
+  TYPE_BUSINESS_LABELS,
+  INTEGRATION_MLM_LABELS,
+  MODELE_MLM_LABELS,
+  OBJECTIF_MLM_LABELS,
+  FONCTIONNALITE_LABELS,
+  TECHNOLOGIE_LABELS,
+  BUDGET_LABELS,
+  DELAI_LABELS,
+} from '../types/devis';
+---
+
+<form id="devis-form" class="devis-form" novalidate>
+  <!-- Messages de statut -->
+  <div id="form-status" class="form-status" aria-live="polite"></div>
+
+  <!-- Section 1: Informations générales -->
+  <section class="form-section">
+    <div class="section-header-form">
+      <span class="section-icon">🟪</span>
+      <h2 class="section-title-form">1. Informations générales</h2>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="nom_prenom" class="form-label">
+          Nom & prénom<span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          id="nom_prenom"
+          name="nom_prenom"
+          class="form-input"
+          placeholder="Jean Dupont"
+          required
+          autocomplete="name"
+        />
+        <span class="form-error" data-error="nom_prenom"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="entreprise" class="form-label">
+          Entreprise / Organisation<span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          id="entreprise"
+          name="entreprise"
+          class="form-input"
+          placeholder="Ma Société SAS"
+          required
+          autocomplete="organization"
+        />
+        <span class="form-error" data-error="entreprise"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="form-label">
+          E-mail professionnel<span class="required">*</span>
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-input"
+          placeholder="contact@entreprise.com"
+          required
+          autocomplete="email"
+        />
+        <span class="form-error" data-error="email"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="telephone" class="form-label">
+          Téléphone<span class="required">*</span>
+        </label>
+        <input
+          type="tel"
+          id="telephone"
+          name="telephone"
+          class="form-input"
+          placeholder="06 12 34 56 78"
+          required
+          autocomplete="tel"
+        />
+        <span class="form-error" data-error="telephone"></span>
+      </div>
+
+      <div class="form-group full-width">
+        <label for="site_web" class="form-label">
+          Site web (si existant)
+          <span class="optional">(optionnel)</span>
+        </label>
+        <input
+          type="url"
+          id="site_web"
+          name="site_web"
+          class="form-input"
+          placeholder="https://www.monsite.com"
+          autocomplete="url"
+        />
+        <span class="form-error" data-error="site_web"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Votre projet MLM -->
+  <section class="form-section">
+    <div class="section-header-form">
+      <span class="section-icon">🟪</span>
+      <h2 class="section-title-form">2. Votre projet MLM</h2>
+    </div>
+
+    <!-- Type de business -->
+    <div class="form-group">
+      <label class="form-label">
+        Quel type de business souhaitez-vous développer ?<span class="required">*</span>
+      </label>
+      <div class="radio-group">
+        {Object.entries(TYPE_BUSINESS_LABELS).map(([value, label]) => (
+          <label class="radio-label">
+            <input
+              type="radio"
+              name="type_business"
+              value={value}
+              class="radio-input"
+              required
+            />
+            <span class="radio-custom"></span>
+            <span class="radio-text">{label}</span>
+          </label>
+        ))}
+      </div>
+      <div class="conditional-field" data-show-if="type_business" data-show-value="autre">
+        <input
+          type="text"
+          id="type_business_autre"
+          name="type_business_autre"
+          class="form-input"
+          placeholder="Précisez votre type de business..."
+        />
+      </div>
+      <span class="form-error" data-error="type_business"></span>
+      <span class="form-error" data-error="type_business_autre"></span>
+    </div>
+
+    <!-- Intégration MLM -->
+    <div class="form-group">
+      <label class="form-label">
+        Souhaitez-vous intégrer le MLM dans :<span class="required">*</span>
+      </label>
+      <div class="checkbox-group">
+        {Object.entries(INTEGRATION_MLM_LABELS).map(([value, label]) => (
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              name="integration_mlm"
+              value={value}
+              class="checkbox-input"
+            />
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-text">{label}</span>
+          </label>
+        ))}
+      </div>
+      <span class="form-error" data-error="integration_mlm"></span>
+    </div>
+
+    <!-- Modèle MLM -->
+    <div class="form-group">
+      <label class="form-label">
+        Quel modèle MLM souhaitez-vous mettre en place ?<span class="required">*</span>
+      </label>
+      <div class="checkbox-group">
+        {Object.entries(MODELE_MLM_LABELS).map(([value, label]) => (
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              name="modele_mlm"
+              value={value}
+              class="checkbox-input"
+            />
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-text">{label}</span>
+          </label>
+        ))}
+      </div>
+      <span class="form-error" data-error="modele_mlm"></span>
+    </div>
+
+    <!-- Objectif MLM -->
+    <div class="form-group">
+      <label class="form-label">
+        Quel est votre objectif principal avec le MLM ?<span class="required">*</span>
+      </label>
+      <div class="radio-group">
+        {Object.entries(OBJECTIF_MLM_LABELS).map(([value, label]) => (
+          <label class="radio-label">
+            <input
+              type="radio"
+              name="objectif_mlm"
+              value={value}
+              class="radio-input"
+              required
+            />
+            <span class="radio-custom"></span>
+            <span class="radio-text">{label}</span>
+          </label>
+        ))}
+      </div>
+      <div class="conditional-field" data-show-if="objectif_mlm" data-show-value="autre">
+        <input
+          type="text"
+          id="objectif_mlm_autre"
+          name="objectif_mlm_autre"
+          class="form-input"
+          placeholder="Précisez votre objectif..."
+        />
+      </div>
+      <span class="form-error" data-error="objectif_mlm"></span>
+      <span class="form-error" data-error="objectif_mlm_autre"></span>
+    </div>
+  </section>
+
+  <!-- Section 3: Fonctionnalités souhaitées -->
+  <section class="form-section">
+    <div class="section-header-form">
+      <span class="section-icon">🟪</span>
+      <h2 class="section-title-form">3. Fonctionnalités souhaitées</h2>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        Quelles fonctionnalités souhaitez-vous intégrer ?<span class="required">*</span>
+      </label>
+      <div class="checkbox-group checkbox-grid">
+        {Object.entries(FONCTIONNALITE_LABELS).map(([value, label]) => (
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              name="fonctionnalites"
+              value={value}
+              class="checkbox-input"
+            />
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-text">{label}</span>
+          </label>
+        ))}
+      </div>
+      <div class="conditional-field" data-show-if-checkbox="fonctionnalites" data-show-value="autre">
+        <input
+          type="text"
+          id="fonctionnalites_autre"
+          name="fonctionnalites_autre"
+          class="form-input"
+          placeholder="Précisez les autres fonctionnalités..."
+        />
+      </div>
+      <span class="form-error" data-error="fonctionnalites"></span>
+      <span class="form-error" data-error="fonctionnalites_autre"></span>
+    </div>
+  </section>
+
+  <!-- Section 4: Informations techniques -->
+  <section class="form-section">
+    <div class="section-header-form">
+      <span class="section-icon">🟪</span>
+      <h2 class="section-title-form">4. Informations techniques</h2>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        Sur quelle technologie est basé votre site ?<span class="required">*</span>
+      </label>
+      <div class="radio-group">
+        {Object.entries(TECHNOLOGIE_LABELS).map(([value, label]) => (
+          <label class="radio-label">
+            <input
+              type="radio"
+              name="technologie"
+              value={value}
+              class="radio-input"
+              required
+            />
+            <span class="radio-custom"></span>
+            <span class="radio-text">{label}</span>
+          </label>
+        ))}
+      </div>
+      <span class="form-error" data-error="technologie"></span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        Avez-vous déjà une base de données utilisateurs ?
+      </label>
+      <div class="radio-group radio-inline">
+        <label class="radio-label">
+          <input
+            type="radio"
+            name="base_donnees_existante"
+            value="true"
+            class="radio-input"
+          />
+          <span class="radio-custom"></span>
+          <span class="radio-text">Oui</span>
+        </label>
+        <label class="radio-label">
+          <input
+            type="radio"
+            name="base_donnees_existante"
+            value="false"
+            class="radio-input"
+            checked
+          />
+          <span class="radio-custom"></span>
+          <span class="radio-text">Non</span>
+        </label>
+      </div>
+      <div class="conditional-field" data-show-if="base_donnees_existante" data-show-value="true">
+        <input
+          type="text"
+          id="base_donnees_details"
+          name="base_donnees_details"
+          class="form-input"
+          placeholder="Précisez le type de base de données, le nombre d'utilisateurs..."
+        />
+      </div>
+      <span class="form-error" data-error="base_donnees_details"></span>
+    </div>
+  </section>
+
+  <!-- Section 5: Budget & Délais -->
+  <section class="form-section">
+    <div class="section-header-form">
+      <span class="section-icon">🟪</span>
+      <h2 class="section-title-form">5. Budget & Délais</h2>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">
+          Quel budget prévoyez-vous pour ce projet ?<span class="required">*</span>
+        </label>
+        <div class="radio-group">
+          {Object.entries(BUDGET_LABELS).map(([value, label]) => (
+            <label class="radio-label">
+              <input
+                type="radio"
+                name="budget"
+                value={value}
+                class="radio-input"
+                required
+              />
+              <span class="radio-custom"></span>
+              <span class="radio-text">{label}</span>
+            </label>
+          ))}
+        </div>
+        <span class="form-error" data-error="budget"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          Quel délai souhaitez-vous pour la livraison ?<span class="required">*</span>
+        </label>
+        <div class="radio-group">
+          {Object.entries(DELAI_LABELS).map(([value, label]) => (
+            <label class="radio-label">
+              <input
+                type="radio"
+                name="delai"
+                value={value}
+                class="radio-input"
+                required
+              />
+              <span class="radio-custom"></span>
+              <span class="radio-text">{label}</span>
+            </label>
+          ))}
+        </div>
+        <span class="form-error" data-error="delai"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Description du projet -->
+  <section class="form-section">
+    <div class="section-header-form">
+      <span class="section-icon">🟪</span>
+      <h2 class="section-title-form">6. Description du projet</h2>
+    </div>
+
+    <div class="form-group">
+      <label for="description_projet" class="form-label">
+        Décrivez votre projet en quelques lignes<span class="required">*</span>
+      </label>
+      <textarea
+        id="description_projet"
+        name="description_projet"
+        class="form-textarea"
+        rows="6"
+        placeholder="Décrivez votre projet, vos attentes, vos besoins spécifiques..."
+        required
+      ></textarea>
+      <span class="char-count">
+        <span id="char-count">0</span> / 5000 caractères
+      </span>
+      <span class="form-error" data-error="description_projet"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="fichiers" class="form-label">
+        Souhaitez-vous ajouter des documents ?
+        <span class="optional">(PDF, cahier des charges, maquettes, etc.)</span>
+      </label>
+      <div class="file-upload">
+        <input
+          type="file"
+          id="fichiers"
+          name="fichiers"
+          class="file-input"
+          multiple
+          accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif,.zip"
+        />
+        <label for="fichiers" class="file-label">
+          <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span>Glissez vos fichiers ici ou cliquez pour parcourir</span>
+          <span class="file-types">PDF, DOC, DOCX, PNG, JPG, ZIP (max 10 Mo)</span>
+        </label>
+        <div id="file-list" class="file-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7: Consentement & envoi -->
+  <section class="form-section">
+    <div class="section-header-form">
+      <span class="section-icon">🟪</span>
+      <h2 class="section-title-form">7. Consentement & envoi</h2>
+    </div>
+
+    <div class="form-group">
+      <label class="checkbox-label consent-label">
+        <input
+          type="checkbox"
+          name="recontact_telephone"
+          value="true"
+          class="checkbox-input"
+        />
+        <span class="checkbox-custom"></span>
+        <span class="checkbox-text">Souhaitez-vous être recontacté par téléphone ?</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label class="checkbox-label consent-label">
+        <input
+          type="checkbox"
+          name="acceptation_rgpd"
+          value="true"
+          class="checkbox-input"
+          required
+        />
+        <span class="checkbox-custom"></span>
+        <span class="checkbox-text">
+          J'autorise Tousgether à utiliser mes informations afin de me recontacter dans le cadre de ma demande de devis.<span class="required">*</span>
+        </span>
+      </label>
+      <span class="form-error" data-error="acceptation_rgpd"></span>
+    </div>
+
+    <!-- Cloudflare Turnstile CAPTCHA -->
+    <div class="form-group captcha-container">
+      <div 
+        id="turnstile-widget"
+        class="cf-turnstile" 
+        data-sitekey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY}
+        data-theme="light"
+        data-callback="onTurnstileSuccess"
+        data-error-callback="onTurnstileError"
+      ></div>
+      <span class="form-error" data-error="captcha"></span>
+    </div>
+
+    <button type="submit" class="submit-button" id="submit-button">
+      <span class="button-text">Envoyer ma demande de devis</span>
+      <span class="button-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </span>
+      <span class="loading-spinner"></span>
+    </button>
+  </section>
+</form>
+
+<style>
+  .devis-form {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Sections */
+  .form-section {
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(128, 59, 133, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .form-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(128, 59, 133, 0.1);
+  }
+
+  .section-header-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgba(128, 59, 133, 0.1);
+  }
+
+  .section-icon {
+    font-size: 18px;
+  }
+
+  .section-title-form {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  /* Grid layout */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .form-grid .full-width {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 640px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Form groups */
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin-bottom: 10px;
+  }
+
+  .required {
+    color: #E84A8A;
+    margin-left: 4px;
+  }
+
+  .optional {
+    color: #86868b;
+    font-weight: 400;
+    font-size: 14px;
+  }
+
+  /* Inputs */
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    padding: 14px 18px;
+    font-family: inherit;
+    font-size: 16px;
+    color: #1d1d1f;
+    background: #f5f5f7;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    outline: none;
+  }
+
+  .form-input::placeholder,
+  .form-textarea::placeholder {
+    color: #86868b;
+  }
+
+  .form-input:hover,
+  .form-textarea:hover {
+    background: #ebebed;
+  }
+
+  .form-input:focus,
+  .form-textarea:focus {
+    background: white;
+    border-color: #803B85;
+    box-shadow: 0 0 0 4px rgba(128, 59, 133, 0.1);
+  }
+
+  .form-input.error,
+  .form-textarea.error {
+    border-color: #E84A8A;
+    background: #fff5f8;
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 150px;
+  }
+
+  .char-count {
+    display: block;
+    text-align: right;
+    font-size: 13px;
+    color: #86868b;
+    margin-top: 8px;
+  }
+
+  /* Radio & Checkbox groups */
+  .radio-group,
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .radio-inline {
+    flex-direction: row;
+    gap: 24px;
+  }
+
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .checkbox-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .radio-label,
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 12px 16px;
+    background: #f5f5f7;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+  }
+
+  .radio-label:hover,
+  .checkbox-label:hover {
+    background: #ebebed;
+  }
+
+  .radio-input,
+  .checkbox-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .radio-custom,
+  .checkbox-custom {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #d2d2d7;
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+
+  .checkbox-custom {
+    border-radius: 6px;
+  }
+
+  .radio-custom::after,
+  .checkbox-custom::after {
+    content: '';
+    position: absolute;
+    opacity: 0;
+    transition: all 0.2s ease;
+  }
+
+  .radio-custom::after {
+    width: 10px;
+    height: 10px;
+    background: #803B85;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  .checkbox-custom::after {
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    top: 2px;
+    left: 6px;
+    transform: rotate(45deg) scale(0);
+  }
+
+  .radio-input:checked + .radio-custom,
+  .checkbox-input:checked + .checkbox-custom {
+    border-color: #803B85;
+    background: #803B85;
+  }
+
+  .radio-input:checked + .radio-custom::after {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    background: white;
+  }
+
+  .checkbox-input:checked + .checkbox-custom::after {
+    opacity: 1;
+    transform: rotate(45deg) scale(1);
+  }
+
+  .radio-input:checked ~ .radio-text,
+  .checkbox-input:checked ~ .checkbox-text {
+    color: #803B85;
+    font-weight: 600;
+  }
+
+  .radio-label:has(.radio-input:checked),
+  .checkbox-label:has(.checkbox-input:checked) {
+    background: rgba(128, 59, 133, 0.08);
+    border-color: rgba(128, 59, 133, 0.2);
+  }
+
+  .radio-text,
+  .checkbox-text {
+    font-size: 15px;
+    color: #1d1d1f;
+    line-height: 1.4;
+  }
+
+  .consent-label {
+    background: transparent;
+    padding: 8px 0;
+  }
+
+  .consent-label:hover {
+    background: transparent;
+  }
+
+  .consent-label .checkbox-text {
+    font-size: 14px;
+    color: #6e6e73;
+  }
+
+  /* Conditional fields */
+  .conditional-field {
+    display: none;
+    margin-top: 16px;
+    padding-left: 34px;
+    animation: slideDown 0.3s ease;
+  }
+
+  .conditional-field.visible {
+    display: block;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* File upload */
+  .file-upload {
+    position: relative;
+  }
+
+  .file-input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .file-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 24px;
+    background: #f5f5f7;
+    border: 2px dashed #d2d2d7;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .file-upload:hover .file-label {
+    background: #ebebed;
+    border-color: #803B85;
+  }
+
+  .file-upload.dragging .file-label {
+    background: rgba(128, 59, 133, 0.05);
+    border-color: #803B85;
+    border-style: solid;
+  }
+
+  .file-icon {
+    width: 48px;
+    height: 48px;
+    color: #803B85;
+  }
+
+  .file-label span:nth-child(2) {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1d1d1f;
+  }
+
+  .file-types {
+    font-size: 13px;
+    color: #86868b;
+  }
+
+  .file-list {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(128, 59, 133, 0.05);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  .file-item-name {
+    color: #1d1d1f;
+    font-weight: 500;
+  }
+
+  .file-item-size {
+    color: #86868b;
+    margin-left: 8px;
+  }
+
+  .file-item-remove {
+    background: none;
+    border: none;
+    color: #E84A8A;
+    cursor: pointer;
+    padding: 4px;
+    transition: transform 0.2s ease;
+  }
+
+  .file-item-remove:hover {
+    transform: scale(1.2);
+  }
+
+  /* Error messages */
+  .form-error {
+    display: block;
+    font-size: 13px;
+    color: #E84A8A;
+    margin-top: 8px;
+    min-height: 0;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: all 0.2s ease;
+  }
+
+  .form-error.visible {
+    opacity: 1;
+    transform: translateY(0);
+    min-height: 20px;
+  }
+
+  /* Status messages */
+  .form-status {
+    padding: 0;
+    border-radius: 16px;
+    margin-bottom: 0;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: all 0.4s ease;
+  }
+
+  .form-status.visible {
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    max-height: 200px;
+    opacity: 1;
+  }
+
+  .form-status.success {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #166534;
+  }
+
+  .form-status.error {
+    background: linear-gradient(135deg, rgba(232, 74, 138, 0.1), rgba(232, 74, 138, 0.05));
+    border: 1px solid rgba(232, 74, 138, 0.3);
+    color: #9f1239;
+  }
+
+  /* Submit button */
+  .submit-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 20px 40px;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #803B85 0%, #9B4BA0 100%);
+    border: none;
+    border-radius: 980px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+
+  .submit-button:hover::before {
+    transform: translateX(100%);
+  }
+
+  .submit-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(128, 59, 133, 0.4);
+  }
+
+  .submit-button:active {
+    transform: translateY(-1px);
+  }
+
+  .submit-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .button-icon svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  .submit-button:hover .button-icon svg {
+    transform: translateX(4px) translateY(-4px);
+  }
+
+  .loading-spinner {
+    display: none;
+    width: 22px;
+    height: 22px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .submit-button.loading .button-text,
+  .submit-button.loading .button-icon {
+    display: none;
+  }
+
+  .submit-button.loading .loading-spinner {
+    display: block;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Captcha */
+  .captcha-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .captcha-container .cf-turnstile {
+    margin: 0 auto;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .form-section {
+      padding: 28px 20px;
+      border-radius: 18px;
+    }
+
+    .section-title-form {
+      font-size: 20px;
+    }
+
+    .submit-button {
+      padding: 18px 32px;
+      font-size: 16px;
+    }
+  }
+</style>
+
+<!-- Script Cloudflare Turnstile -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<script>
+  // Variables globales pour Turnstile
+  let turnstileToken: string | null = null;
+
+  // Callbacks Turnstile
+  (window as any).onTurnstileSuccess = (token: string) => {
+    turnstileToken = token;
+    const errorEl = document.querySelector('[data-error="captcha"]');
+    if (errorEl) {
+      errorEl.classList.remove('visible');
+      errorEl.textContent = '';
+    }
+  };
+
+  (window as any).onTurnstileError = () => {
+    turnstileToken = null;
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('devis-form') as HTMLFormElement;
+    const statusDiv = document.getElementById('form-status') as HTMLDivElement;
+    const submitButton = document.getElementById('submit-button') as HTMLButtonElement;
+    const charCount = document.getElementById('char-count') as HTMLSpanElement;
+    const descriptionTextarea = document.getElementById('description_projet') as HTMLTextAreaElement;
+    const fileInput = document.getElementById('fichiers') as HTMLInputElement;
+    const fileList = document.getElementById('file-list') as HTMLDivElement;
+    const fileUpload = document.querySelector('.file-upload') as HTMLDivElement;
+
+    // Character count
+    descriptionTextarea?.addEventListener('input', () => {
+      const count = descriptionTextarea.value.length;
+      charCount.textContent = count.toString();
+      if (count > 5000) {
+        descriptionTextarea.value = descriptionTextarea.value.slice(0, 5000);
+        charCount.textContent = '5000';
+      }
+    });
+
+    // Conditional fields - Radio
+    document.querySelectorAll('[data-show-if]').forEach((field) => {
+      const el = field as HTMLElement;
+      const radioName = el.dataset.showIf;
+      const showValue = el.dataset.showValue;
+      
+      document.querySelectorAll(`input[name="${radioName}"]`).forEach((radio) => {
+        radio.addEventListener('change', (e) => {
+          const target = e.target as HTMLInputElement;
+          el.classList.toggle('visible', target.value === showValue);
+        });
+      });
+    });
+
+    // Conditional fields - Checkbox
+    document.querySelectorAll('[data-show-if-checkbox]').forEach((field) => {
+      const el = field as HTMLElement;
+      const checkboxName = el.dataset.showIfCheckbox;
+      const showValue = el.dataset.showValue;
+      
+      document.querySelectorAll(`input[name="${checkboxName}"]`).forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+          const checked = document.querySelector(
+            `input[name="${checkboxName}"][value="${showValue}"]:checked`
+          ) as HTMLInputElement;
+          el.classList.toggle('visible', !!checked);
+        });
+      });
+    });
+
+    // File upload handling
+    let selectedFiles: File[] = [];
+
+    fileUpload?.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      fileUpload.classList.add('dragging');
+    });
+
+    fileUpload?.addEventListener('dragleave', () => {
+      fileUpload.classList.remove('dragging');
+    });
+
+    fileUpload?.addEventListener('drop', () => {
+      fileUpload.classList.remove('dragging');
+    });
+
+    fileInput?.addEventListener('change', () => {
+      if (fileInput.files) {
+        selectedFiles = [...selectedFiles, ...Array.from(fileInput.files)];
+        updateFileList();
+      }
+    });
+
+    function updateFileList() {
+      fileList.innerHTML = '';
+      selectedFiles.forEach((file, index) => {
+        const size = (file.size / 1024 / 1024).toFixed(2);
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.innerHTML = `
+          <span>
+            <span class="file-item-name">${file.name}</span>
+            <span class="file-item-size">(${size} Mo)</span>
+          </span>
+          <button type="button" class="file-item-remove" data-index="${index}">✕</button>
+        `;
+        fileList.appendChild(item);
+      });
+
+      // Add remove handlers
+      fileList.querySelectorAll('.file-item-remove').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLButtonElement;
+          const index = parseInt(target.dataset.index || '0');
+          selectedFiles.splice(index, 1);
+          updateFileList();
+        });
+      });
+    }
+
+    // Clear all error messages
+    function clearErrors() {
+      document.querySelectorAll('.form-error').forEach((el) => {
+        el.classList.remove('visible');
+        el.textContent = '';
+      });
+      document.querySelectorAll('.form-input.error, .form-textarea.error').forEach((el) => {
+        el.classList.remove('error');
+      });
+    }
+
+    // Show error for a specific field
+    function showError(field: string, message: string) {
+      const errorEl = document.querySelector(`[data-error="${field}"]`) as HTMLElement;
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.add('visible');
+      }
+      const input = document.getElementById(field) || document.querySelector(`[name="${field}"]`);
+      if (input && (input.classList.contains('form-input') || input.classList.contains('form-textarea'))) {
+        input.classList.add('error');
+      }
+    }
+
+    // Show status message
+    function showStatus(type: 'success' | 'error', message: string) {
+      statusDiv.className = `form-status ${type} visible`;
+      statusDiv.textContent = message;
+      statusDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Collect form data
+    function collectFormData(): Record<string, unknown> {
+      const formData = new FormData(form);
+      const data: Record<string, unknown> = {};
+
+      // Text fields
+      ['nom_prenom', 'entreprise', 'email', 'telephone', 'site_web',
+       'type_business_autre', 'objectif_mlm_autre', 'fonctionnalites_autre',
+       'base_donnees_details', 'description_projet'].forEach((field) => {
+        const value = formData.get(field);
+        if (value) data[field] = value;
+      });
+
+      // Radio fields
+      ['type_business', 'objectif_mlm', 'technologie', 'budget', 'delai'].forEach((field) => {
+        const value = formData.get(field);
+        if (value) data[field] = value;
+      });
+
+      // Boolean radio
+      data.base_donnees_existante = formData.get('base_donnees_existante') === 'true';
+
+      // Checkbox arrays
+      ['integration_mlm', 'modele_mlm', 'fonctionnalites'].forEach((field) => {
+        data[field] = formData.getAll(field);
+      });
+
+      // Boolean checkboxes
+      data.recontact_telephone = formData.get('recontact_telephone') === 'true';
+      data.acceptation_rgpd = formData.get('acceptation_rgpd') === 'true';
+
+      return data;
+    }
+
+    // Form submission
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      clearErrors();
+      statusDiv.className = 'form-status';
+      statusDiv.textContent = '';
+
+      // Vérifier le CAPTCHA
+      if (!turnstileToken) {
+        showError('captcha', 'Veuillez valider le CAPTCHA');
+        return;
+      }
+      
+      submitButton.disabled = true;
+      submitButton.classList.add('loading');
+
+      try {
+        const data = collectFormData();
+        // Ajouter le token CAPTCHA
+        (data as any).captchaToken = turnstileToken;
+        
+        const response = await fetch('/api/devis', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showStatus('success', result.message);
+          form.reset();
+          selectedFiles = [];
+          updateFileList();
+          charCount.textContent = '0';
+          
+          // Reset conditional fields
+          document.querySelectorAll('.conditional-field').forEach((el) => {
+            el.classList.remove('visible');
+          });
+
+          // Reset Turnstile CAPTCHA
+          turnstileToken = null;
+          if ((window as any).turnstile) {
+            (window as any).turnstile.reset();
+          }
+        } else {
+          showStatus('error', result.message);
+          
+          // Show field-specific errors
+          if (result.errors) {
+            Object.entries(result.errors).forEach(([field, message]) => {
+              showError(field, message as string);
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        showStatus('error', 'Une erreur de connexion est survenue. Veuillez réessayer.');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.classList.remove('loading');
+      }
+    });
+  });
+</script>
+
