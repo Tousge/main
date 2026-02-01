@@ -1,9 +1,13 @@
 import type { APIRoute } from 'astro';
 import type { DevisFormData, DevisResponse } from '../../types/devis';
 import { sendDevisEmails } from '../../lib/email';
+import { logConfigStatus } from '../../lib/config';
 
 // Désactiver le pré-rendu pour cette route API
 export const prerender = false;
+
+// Vérifier la config au premier chargement du module
+let configChecked = false;
 
 // Vérification du token Turnstile
 async function verifyTurnstileToken(token: string, ip: string): Promise<boolean> {
@@ -169,9 +173,15 @@ function sanitizeData(data: Partial<DevisFormData>): Partial<DevisFormData> {
 }
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
+  // Vérification de la config au premier appel
+  if (!configChecked) {
+    logConfigStatus(import.meta.env);
+    configChecked = true;
+  }
+
   // Import dynamique de Supabase (évite les erreurs lors du build)
   const { supabase, DEVIS_TABLE } = await import('../../lib/supabase');
-  
+
   try {
     // Vérifier le Content-Type
     const contentType = request.headers.get('content-type');
