@@ -4,22 +4,14 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
-    "start": "node ./dist/server/entry.mjs",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "deploy:build": "npm run build && npm run deploy:prepare",
-    "deploy:prepare": "mkdir -p logs",
-    "pm2:start": "pm2 start ecosystem.config.cjs",
-    "pm2:stop": "pm2 stop tousgether",
-    "pm2:restart": "pm2 restart tousgether",
-    "pm2:logs": "pm2 logs tousgether",
-    "pm2:status": "pm2 status"
+    "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/node": "^8.3.4",
     "@astrojs/sitemap": "^3.2.1",
     "@astrojs/tailwind": "^5.1.2",
+    "@astrojs/vercel": "^7.8.2",
     "@supabase/supabase-js": "^2.45.4",
     "astro": "^4.16.0",
     "lightningcss": "^1.27.0",

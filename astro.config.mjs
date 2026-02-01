@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel/serverless';
 
 export default defineConfig({
   site: 'https://tousgether.com',
@@ -9,10 +9,8 @@ export default defineConfig({
   // Mode hybride : pages statiques par défaut, SSR pour les API
   output: 'hybrid',
   
-  // Adapter Node.js pour le déploiement SSR (LWS VPS / Hébergement Node.js)
-  adapter: node({
-    mode: 'standalone',
-  }),
+  // Adapter Vercel pour le déploiement serverless
+  adapter: vercel(),
   
   integrations: [
     tailwind({
@@ -87,14 +85,11 @@ export default defineConfig({
     },
     // Optimisation des dépendances
     optimizeDeps: {
-      exclude: ['@astrojs/node'],
+      exclude: ['@astrojs/vercel'],
     },
   },
   
-  // Configuration serveur pour LWS
   server: {
-    host: process.env.HOST || '0.0.0.0',
-    port: parseInt(process.env.PORT || '4321'),
     headers: {
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'SAMEORIGIN',
