@@ -107,7 +107,7 @@ export interface DevisFormData {
 
   // 6. Description du projet
   description_projet: string;
-  // Note: fichiers sera géré séparément via upload
+  fichiers?: { name: string; path: string; size: number }[];
 
   // 7. Consentement & envoi
   recontact_telephone: boolean;

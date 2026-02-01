@@ -1285,12 +1285,34 @@ import {
         const result = await response.json();
 
         if (result.success) {
+          // Upload des fichiers si présents
+          if (selectedFiles.length > 0 && result.id) {
+            try {
+              const uploadData = new FormData();
+              uploadData.append('devisId', result.id);
+              selectedFiles.forEach((file) => {
+                uploadData.append('fichiers', file);
+              });
+
+              const uploadResponse = await fetch('/api/upload', {
+                method: 'POST',
+                body: uploadData,
+              });
+              const uploadResult = await uploadResponse.json();
+              if (!uploadResult.success) {
+                console.error('Erreur upload fichiers:', uploadResult.message);
+              }
+            } catch (uploadError) {
+              console.error('Erreur upload fichiers:', uploadError);
+            }
+          }
+
           showStatus('success', result.message);
           form.reset();
           selectedFiles = [];
           updateFileList();
           charCount.textContent = '0';
-          
+
           // Reset conditional fields
           document.querySelectorAll('.conditional-field').forEach((el) => {
             el.classList.remove('visible');

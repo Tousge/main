@@ -254,7 +254,7 @@ const labelsJSON = JSON.stringify({
   const LABELS = JSON.parse(labelsJSON);
   
   // State
-  let currentPassword = '';
+  let currentToken = '';
   let allDevis = [];
 
   // Elements
@@ -296,14 +296,26 @@ const labelsJSON = JSON.stringify({
     return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
   }
 
-  // API call
-  async function apiCall(action, id = null) {
+  // API call - utilise le token signé au lieu du mot de passe
+  async function apiCall(action, id = null, password = null) {
+    const body = { action, id };
+    if (password) {
+      body.password = password;
+    } else {
+      body.token = currentToken;
+    }
     const response = await fetch('/api/admin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: currentPassword, action, id })
+      body: JSON.stringify(body)
     });
-    return response.json();
+    const result = await response.json();
+    // Mettre à jour le token si l'API en renvoie un nouveau
+    if (result.token) {
+      currentToken = result.token;
+      sessionStorage.setItem('adminToken', currentToken);
+    }
+    return result;
   }
 
   // Login
@@ -312,14 +324,12 @@ const labelsJSON = JSON.stringify({
     const btn = loginForm.querySelector('button');
     btn.classList.add('loading');
     loginError.classList.remove('visible');
-    
-    currentPassword = passwordInput.value;
-    const result = await apiCall('list');
-    
+
+    const result = await apiCall('list', null, passwordInput.value);
+
     btn.classList.remove('loading');
-    
+
     if (result.success) {
-      sessionStorage.setItem('adminAuth', currentPassword);
       showDashboard(result.data);
     } else {
       loginError.textContent = result.message;
@@ -508,8 +518,8 @@ const labelsJSON = JSON.stringify({
 
   // Logout
   document.getElementById('logout-btn').addEventListener('click', () => {
-    sessionStorage.removeItem('adminAuth');
-    currentPassword = '';
+    sessionStorage.removeItem('adminToken');
+    currentToken = '';
     allDevis = [];
     passwordInput.value = '';
     dashboardContainer.style.display = 'none';
@@ -517,16 +527,17 @@ const labelsJSON = JSON.stringify({
     loginContainer.style.display = 'flex';
   });
 
-  // Auto-login if session exists
+  // Auto-login si un token de session existe
   (async function() {
-    const savedAuth = sessionStorage.getItem('adminAuth');
-    if (savedAuth) {
-      currentPassword = savedAuth;
+    const savedToken = sessionStorage.getItem('adminToken');
+    if (savedToken) {
+      currentToken = savedToken;
       const result = await apiCall('list');
       if (result.success) {
         showDashboard(result.data);
       } else {
-        sessionStorage.removeItem('adminAuth');
+        sessionStorage.removeItem('adminToken');
+        currentToken = '';
       }
     }
   })();

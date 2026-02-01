@@ -165,17 +165,22 @@ const labelsJSON = JSON.stringify({
     return map[budget] || '';
   }
 
-  // API call - utilise les slugs sécurisés au lieu des IDs
+  // API call - utilise les slugs sécurisés et le token de session
   async function apiCall(action, slug = null) {
-    const password = sessionStorage.getItem('adminAuth');
-    if (!password) return { success: false, message: 'Non authentifié' };
-    
+    const token = sessionStorage.getItem('adminToken');
+    if (!token) return { success: false, message: 'Non authentifié' };
+
     const response = await fetch('/api/admin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password, action, slug })
+      body: JSON.stringify({ token, action, slug })
     });
-    return response.json();
+    const result = await response.json();
+    // Mettre à jour le token si rafraîchi
+    if (result.token) {
+      sessionStorage.setItem('adminToken', result.token);
+    }
+    return result;
   }
 
   // Show states
@@ -401,8 +406,8 @@ const labelsJSON = JSON.stringify({
   (async function() {
     showLoading();
     
-    const password = sessionStorage.getItem('adminAuth');
-    if (!password) {
+    const token = sessionStorage.getItem('adminToken');
+    if (!token) {
       showAuth();
       return;
     }
@@ -410,8 +415,8 @@ const labelsJSON = JSON.stringify({
     const result = await apiCall('get', devisSlug);
     
     if (!result.success) {
-      if (result.message === 'Mot de passe incorrect' || result.message === 'Non authentifié') {
-        sessionStorage.removeItem('adminAuth');
+      if (result.message === 'Mot de passe incorrect' || result.message === 'Non authentifié' || result.message === 'Session expirée, veuillez vous reconnecter') {
+        sessionStorage.removeItem('adminToken');
         showAuth();
       } else {
         alert('Erreur: ' + result.message);

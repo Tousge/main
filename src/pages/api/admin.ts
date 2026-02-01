@@ -1,14 +1,15 @@
 import type { APIRoute } from 'astro';
 import { generateSlug, findUuidBySlug, addSlugsToItems, isValidSlugFormat } from '../../lib/slug';
+import { generateAuthToken, verifyAuthToken } from '../../lib/auth';
 
 // Désactiver le pré-rendu pour cette route API
 export const prerender = false;
 
 // Récupérer le secret pour les slugs
 function getSlugSecret(): string {
-  const secret = import.meta.env.SLUG_SECRET || import.meta.env.ADMIN_PASSWORD;
+  const secret = import.meta.env.SLUG_SECRET;
   if (!secret) {
-    throw new Error('SLUG_SECRET ou ADMIN_PASSWORD requis pour générer les slugs');
+    throw new Error('SLUG_SECRET requis pour générer les slugs. Configurez cette variable dans votre .env');
   }
   return secret;
 }
@@ -16,7 +17,7 @@ function getSlugSecret(): string {
 // Récupérer les demandes de devis (avec authentification)
 export const POST: APIRoute = async ({ request }) => {
   const { supabase, DEVIS_TABLE } = await import('../../lib/supabase');
-  
+
   try {
     // Vérifier le Content-Type
     const contentType = request.headers.get('content-type');
@@ -28,8 +29,8 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Parser les données
-    const { password, action, id, slug } = await request.json();
-    
+    const { password, token, action, id, slug } = await request.json();
+
     // Vérifier le mot de passe admin
     const adminPassword = import.meta.env.ADMIN_PASSWORD;
     if (!adminPassword) {
@@ -40,7 +41,32 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    if (password !== adminPassword) {
+    // Authentification : soit par mot de passe (login), soit par token (session)
+    let authenticated = false;
+    let authToken = token;
+
+    if (password) {
+      // Login avec mot de passe : générer un token
+      if (password !== adminPassword) {
+        return new Response(
+          JSON.stringify({ success: false, message: 'Mot de passe incorrect' }),
+          { status: 401, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      authenticated = true;
+      authToken = generateAuthToken(adminPassword);
+    } else if (token) {
+      // Session existante : vérifier le token
+      authenticated = verifyAuthToken(token, adminPassword);
+      if (!authenticated) {
+        return new Response(
+          JSON.stringify({ success: false, message: 'Session expirée, veuillez vous reconnecter' }),
+          { status: 401, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    if (!authenticated) {
       return new Response(
         JSON.stringify({ success: false, message: 'Mot de passe incorrect' }),
         { status: 401, headers: { 'Content-Type': 'application/json' } }
@@ -69,7 +95,7 @@ export const POST: APIRoute = async ({ request }) => {
       const dataWithSlugs = addSlugsToItems(data || [], slugSecret);
 
       return new Response(
-        JSON.stringify({ success: true, data: dataWithSlugs }),
+        JSON.stringify({ success: true, data: dataWithSlugs, token: authToken }),
         { status: 200, headers: { 'Content-Type': 'application/json' } }
       );
     }
