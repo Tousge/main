@@ -47,7 +47,7 @@ export default defineConfig({
   
   build: {
     inlineStylesheets: 'always',
-    format: 'file',
+    format: 'directory',
     // Optimisation des assets
     assets: '_assets',
   },
