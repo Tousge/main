@@ -1,7 +1,4 @@
 {
-  "functions": {
-    "**/*": {
-      "runtime": "nodejs20.x"
-    }
-  }
+  "framework": "astro",
+  "buildCommand": "astro build && node -e \"const fs=require('fs');const p='.vercel/output/functions/_render.func/.vc-config.json';const c=JSON.parse(fs.readFileSync(p));c.runtime='nodejs20.x';fs.writeFileSync(p,JSON.stringify(c,null,2));\""
 }
